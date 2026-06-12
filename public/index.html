@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>紫微斗數排盤</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23fffdf7'/%3E%3Ctext x='32' y='44' font-size='36' text-anchor='middle' fill='%238b5e1f' font-family='serif'%3E%E7%B4%AB%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23ffffff'/%3E%3Ctext x='32' y='44' font-size='36' text-anchor='middle' fill='%238b5e1f' font-family='serif'%3E%E7%B4%AB%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -12,8 +12,8 @@
     /* 現代白介面 */
     --bg: #f4f5f7; --panel: #ffffff; --line: #e4e7eb; --ink: #26282d; --muted: #6b7280; --faint: #9aa1ab;
     --brand: #8b5e1f; --brand-soft: #b8860b;
-    /* 命盤（保留原紙盤風格） */
-    --paper: #fffdf7; --cline: #c9b98a; --cink: #2d2418; --csub: #8a7a5c; --cmino: #5b4a2f; --cgod: #a0906e;
+    /* 命盤（文墨式白底細線盤） */
+    --cgrid: #aab1bb; --cink: #1f2937; --csub: #9ca3af; --cmino: #374151; --cadj: #6b7280; --cgod: #9aa1ab;
     --c運: #7c3aed; --c年: #dc2626; --c月: #ea580c; --c日: #16a34a; --c時: #2563eb; --c小: #0891b2;
     --m祿: #16a34a; --m權: #dc2626; --m科: #2563eb; --m忌: #475569;
   }
@@ -80,56 +80,61 @@
   }
   #empty .big { font-family: "Noto Serif TC", serif; font-size: 22px; color: var(--muted); margin-bottom: 10px; letter-spacing: 6px; }
 
-  /* ── 命盤（原紙盤風格） ── */
-  #grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(178px, auto); gap: 5px; }
-  .palace {
-    background: var(--paper); border: 1px solid var(--cline); border-radius: 6px;
-    padding: 6px 7px; position: relative; display: flex; flex-direction: column;
-    font-size: 12px; cursor: pointer; transition: box-shadow .15s;
+  /* ── 命盤（文墨式：白底、細線連格、星曜直書） ── */
+  #board-wrap { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; box-shadow: 0 1px 3px rgba(16, 24, 40, .05); }
+  #grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(208px, auto);
+    gap: 1px; background: var(--cgrid); border: 1.5px solid var(--cgrid);
   }
-  .palace:hover { box-shadow: 0 0 0 2px var(--brand); }
-  .palace.selected { box-shadow: 0 0 0 2px var(--brand), inset 0 0 0 1px var(--brand); }
+  .palace {
+    background: #fff; padding: 5px 5px 4px; position: relative; display: flex; flex-direction: column;
+    font-size: 12px; cursor: pointer; transition: box-shadow .15s, background .15s;
+  }
+  .palace:hover { box-shadow: inset 0 0 0 2px var(--brand-soft); }
+  .palace.selected { box-shadow: inset 0 0 0 2px var(--brand); background: #fffdf4; }
   .palace.tri { background: #fdf6e3; }
-  .majors { display: flex; flex-wrap: wrap; gap: 2px 8px; min-height: 42px; align-content: flex-start; }
-  .star { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.15; }
-  .star .n { font-size: 14px; font-weight: 700; color: var(--cink); }
-  .star .b { font-size: 10px; color: var(--csub); }
-  .chips { display: flex; gap: 2px; margin-top: 1px; }
-  .chip { font-size: 10px; line-height: 1; padding: 2px 3px; border-radius: 3px; color: #fff; font-weight: 700; }
+
+  /* 直書星曜：一字一行 */
+  .vt { display: inline-block; width: 1.15em; word-break: break-all; line-height: 1.12; text-align: center; }
+  .starzone { display: flex; flex-wrap: wrap; gap: 0 1px; align-content: flex-start; min-height: 104px; }
+  .star { display: inline-flex; flex-direction: column; align-items: center; }
+  .star .b { font-size: 9px; color: var(--csub); margin-top: 1px; }
+  .star.t1 .n { font-size: 14.5px; font-weight: 700; color: var(--cink); }
+  .star.t2 .n { font-size: 11.5px; font-weight: 600; color: var(--cmino); }
+  .star.t3 .n { font-size: 10px; color: var(--cadj); }
+  .chip { font-size: 9px; line-height: 1.15; width: 1.3em; word-break: break-all; text-align: center; border-radius: 3px; color: #fff; font-weight: 700; margin-top: 1px; padding: 1px 0; }
   .chip.self { background: transparent !important; border-width: 1px; border-style: solid; font-weight: 500; }
-  .minors { display: flex; flex-wrap: wrap; gap: 1px 7px; margin-top: 2px; }
-  .minors .star .n { font-size: 12px; font-weight: 600; color: var(--cmino); }
-  .minors .star .b { font-size: 9px; }
-  .adj { margin-top: 2px; font-size: 10px; color: var(--csub); line-height: 1.5; }
-  .flow { margin-top: 2px; display: flex; flex-wrap: wrap; gap: 2px 4px; }
-  .flow span { font-size: 10px; font-weight: 600; line-height: 1.4; }
-  .pfoot { margin-top: auto; padding-top: 3px; }
-  .gods { display: flex; justify-content: space-between; font-size: 9px; color: var(--cgod); margin-bottom: 2px; }
-  .overlay-names { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 2px; }
-  .overlay-names span { font-size: 10px; padding: 0 4px; border-radius: 3px; color: #fff; font-weight: 700; }
-  .pmain { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid #ece2c8; padding-top: 3px; }
+
+  .flow { margin-top: 2px; display: flex; flex-wrap: wrap; gap: 1px 5px; }
+  .flow span { font-size: 9.5px; font-weight: 600; line-height: 1.45; }
+  .pfoot { margin-top: auto; padding-top: 2px; }
+  .overlay-names { display: flex; flex-wrap: wrap; gap: 1px 6px; margin-bottom: 1px; }
+  .overlay-names span { font-size: 9.5px; font-weight: 700; line-height: 1.4; }
+  .pmain { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid #e5e7eb; padding-top: 3px; gap: 4px; }
+  .gods2 { display: grid; grid-template-columns: auto auto; gap: 0 7px; font-size: 9px; color: var(--cgod); line-height: 1.45; white-space: nowrap; }
+  .pcenter { text-align: center; flex: 1; }
   .pname { font-family: "Noto Serif TC", serif; font-size: 14px; font-weight: 700; color: var(--brand); letter-spacing: 1px; }
   .ptag { font-size: 9px; vertical-align: 2px; margin-left: 2px; padding: 0 3px; border-radius: 3px; background: #b45309; color: #fff; letter-spacing: 0; font-family: "Noto Sans TC", sans-serif; font-weight: 400; }
   .ptag.origin { background: #0e7490; }
-  .pgz { font-family: "Noto Serif TC", serif; font-size: 13px; color: #6b5b3e; }
-  .pinfo { text-align: right; font-size: 9.5px; color: var(--csub); line-height: 1.4; }
-  .marks { position: absolute; top: 5px; right: 6px; display: flex; gap: 2px; }
+  .pinfo { font-size: 9px; color: var(--csub); line-height: 1.4; }
+  .pgz { font-family: "Noto Serif TC", serif; font-size: 13.5px; color: var(--cink); align-self: flex-end; }
+  .marks { position: absolute; top: 4px; right: 5px; display: flex; gap: 2px; }
   .marks span { font-size: 10px; font-weight: 700; color: #fff; border-radius: 3px; padding: 1px 3px; }
 
-  /* 中央資訊（紙盤風格） */
-  #center { grid-area: 2 / 2 / 4 / 4; background: var(--paper); border: 1px solid var(--cline); border-radius: 6px; padding: 16px 20px; overflow: auto; }
+  /* 中央資訊 */
+  #center { grid-area: 2 / 2 / 4 / 4; background: #fff; padding: 16px 20px; overflow: auto; cursor: default; }
   #center h2 { font-family: "Noto Serif TC", serif; margin: 0 0 2px; font-size: 18px; letter-spacing: 5px; color: var(--brand); }
   #center .pillars { font-family: "Noto Serif TC", serif; font-size: 18px; letter-spacing: 4px; color: var(--cink); margin: 6px 0 2px; }
-  #center .meta { font-size: 12.5px; color: var(--csub); line-height: 1.9; }
+  #center .meta { font-size: 12.5px; color: var(--muted); line-height: 1.9; }
   #center .meta b { color: var(--cink); font-weight: 700; }
   .keyrow { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
-  .key { font-size: 11.5px; padding: 3px 10px; border-radius: 999px; border: 1px solid #e2d7b8; background: #fbf7ea; color: var(--csub); }
+  .key { font-size: 11.5px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); background: #f8f9fa; color: var(--muted); }
   .key b { color: var(--brand); font-weight: 700; margin-left: 2px; }
   .sihua { display: flex; gap: 8px; margin: 6px 0 2px; flex-wrap: wrap; }
   .sihua span { font-size: 12px; padding: 3px 9px; border-radius: 5px; color: #fff; font-weight: 700; }
-  #center .hor { border-top: 1px dashed var(--cline); margin-top: 10px; padding-top: 10px; font-size: 12.5px; line-height: 2; color: var(--csub); }
+  #center .hor { border-top: 1px dashed var(--line); margin-top: 10px; padding-top: 10px; font-size: 12.5px; line-height: 2; color: var(--muted); }
   #center .hor .lay { display: inline-block; min-width: 34px; font-weight: 700; }
-  #center .tip { margin-top: 8px; font-size: 10.5px; color: var(--cgod); }
+  #center .tip { margin-top: 8px; font-size: 10.5px; color: var(--faint); }
 
   /* ── 文字盤 ── */
   #view-text { display: none; }
@@ -218,7 +223,7 @@
 
     <section id="view-chart">
       <div id="empty"><div class="big">未　排　盤</div>輸入出生資料後按「排盤」</div>
-      <div id="grid" style="display:none"></div>
+      <div id="board-wrap" style="display:none"><div id="grid"></div></div>
     </section>
 
     <section id="view-text">
@@ -303,7 +308,7 @@ async function 排盤() {
     資料 = 盤回.data;
     文字 = 文回;
     document.getElementById('empty').style.display = 'none';
-    document.getElementById('grid').style.display = '';
+    document.getElementById('board-wrap').style.display = '';
     document.getElementById('text-pane').textContent = 文字;
     繪盤();
   } catch (e) {
@@ -314,12 +319,12 @@ async function 排盤() {
 }
 
 /* ── 渲染 ── */
-function 星HTML(s) {
+function 星HTML(s, 階) {
   const chips = [];
   if (s.四化) chips.push(`<span class="chip" style="background:${化色[s.四化]}">${s.四化}</span>`);
   if (s.離心自化) chips.push(`<span class="chip self" style="border-color:${化色[s.離心自化]};color:${化色[s.離心自化]}">↓${s.離心自化}</span>`);
   if (s.向心自化) chips.push(`<span class="chip self" style="border-color:${化色[s.向心自化]};color:${化色[s.向心自化]}">↑${s.向心自化}</span>`);
-  return `<span class="star"><span class="n">${s.名稱}</span><span class="b">${s.亮度 || '　'}</span>${chips.length ? `<span class="chips">${chips.join('')}</span>` : ''}</span>`;
+  return `<span class="star ${階}"><span class="n vt">${s.名稱}</span>${s.亮度 ? `<span class="b">${s.亮度}</span>` : ''}${chips.join('')}</span>`;
 }
 
 function 啟用層() {
@@ -358,22 +363,28 @@ function 繪盤() {
 
     let 疊名 = '';
     for (const 層 of 層定義) {
-      if (on[層.鍵]) 疊名 += `<span style="background:${層.css}">${層.鍵 === '運' ? '限' : 層.鍵}${層資料[層.鍵].宮名[i]}</span>`;
+      if (on[層.鍵]) 疊名 += `<span style="color:${層.css}">${層.鍵 === '運' ? '限' : 層.鍵}${層資料[層.鍵].宮名[i]}</span>`;
     }
+
+    const 星區 = [
+      ...p.主星.map((s) => 星HTML(s, 't1')),
+      ...p.輔星.map((s) => 星HTML(s, 't2')),
+      ...p.雜曜.map((s) => 星HTML(s, 't3')),
+    ].join('');
 
     div.innerHTML = `
       <div class="marks">${標}</div>
-      <div class="majors">${p.主星.map((s) => 星HTML(s)).join('')}</div>
-      <div class="minors">${p.輔星.map((s) => 星HTML(s)).join('')}</div>
-      <div class="adj">${p.雜曜.map((s) => s.名稱).join('　')}</div>
+      <div class="starzone">${星區}</div>
       ${流曜 ? `<div class="flow">${流曜}</div>` : ''}
       <div class="pfoot">
-        <div class="gods"><span>${p.長生十二神}</span><span>${p.博士十二神}</span><span>${p.將前十二神}</span><span>${p.歲前十二神}</span></div>
         ${疊名 ? `<div class="overlay-names">${疊名}</div>` : ''}
         <div class="pmain">
-          <span class="pname">${p.宮名}${p.是身宮 ? '<span class="ptag">身</span>' : ''}${p.是來因宮 ? '<span class="ptag origin">來因</span>' : ''}</span>
-          <span class="pinfo">大限 ${p.大限.起}–${p.大限.迄}<br>小限 ${p.小限歲數.slice(0, 3).join('.')}…</span>
-          <span class="pgz">${p.天干}${p.地支}</span>
+          <div class="gods2"><span>${p.長生十二神}</span><span>${p.博士十二神}</span><span>${p.將前十二神}</span><span>${p.歲前十二神}</span></div>
+          <div class="pcenter">
+            <span class="pname">${p.宮名}${p.是身宮 ? '<span class="ptag">身</span>' : ''}${p.是來因宮 ? '<span class="ptag origin">來因</span>' : ''}</span>
+            <div class="pinfo">大限 ${p.大限.起}–${p.大限.迄}　小限 ${p.小限歲數.slice(0, 3).join('.')}…</div>
+          </div>
+          <span class="pgz vt">${p.天干}${p.地支}</span>
         </div>
       </div>`;
     div.addEventListener('click', () => 選宮(i));
