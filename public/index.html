@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>紫微斗數排盤</title>
+<style>
+  :root {
+    --bg: #f5f1e8; --panel: #fffdf7; --line: #c9b98a; --ink: #2d2418;
+    --accent: #8b5e1f;
+    --c運: #7c3aed; --c年: #dc2626; --c月: #ea580c; --c日: #16a34a; --c時: #2563eb; --c小: #0891b2;
+    --m祿: #16a34a; --m權: #dc2626; --m科: #2563eb; --m忌: #44403c;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Microsoft JhengHei", "PMingLiU", serif; background: var(--bg); color: var(--ink); }
+  header { text-align: center; padding: 14px 0 4px; }
+  header h1 { margin: 0; font-size: 26px; letter-spacing: 8px; color: var(--accent); }
+  header p { margin: 4px 0 0; font-size: 12px; color: #8a7a5c; }
+  #form { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; padding: 12px; }
+  #form label { font-size: 13px; }
+  #form input, #form select, #form button { font-size: 14px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); font-family: inherit; }
+  #form input[type=number] { width: 70px; }
+  #form button { background: var(--accent); color: #fff; cursor: pointer; padding: 6px 22px; letter-spacing: 4px; }
+  #form button:hover { filter: brightness(1.1); }
+  #target-bar { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; padding: 0 12px 10px; font-size: 13px; }
+  #target-bar input, #target-bar select { font-size: 13px; padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); font-family: inherit; }
+  .layer-toggle { display: inline-flex; align-items: center; gap: 2px; margin-left: 2px; }
+  #error { text-align: center; color: #b91c1c; font-size: 14px; padding: 4px; }
+  #board { display: none; max-width: 1180px; margin: 0 auto 30px; padding: 0 10px; }
+  #grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, minmax(168px, auto)); gap: 4px; }
+  .palace { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 6px; position: relative; display: flex; flex-direction: column; font-size: 12px; cursor: pointer; transition: box-shadow .15s; }
+  .palace:hover { box-shadow: 0 0 0 2px var(--accent); }
+  .palace.selected { box-shadow: 0 0 0 2px var(--accent), inset 0 0 0 1px var(--accent); }
+  .palace.tri { background: #fdf6e3; }
+  #center { grid-area: 2 / 2 / 4 / 4; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 12px 16px; font-size: 13px; line-height: 1.85; overflow: auto; }
+  #center h2 { margin: 0 0 4px; font-size: 17px; color: var(--accent); letter-spacing: 2px; }
+  #center .pillars { font-size: 16px; letter-spacing: 3px; }
+  #center .hor { border-top: 1px dashed var(--line); margin-top: 6px; padding-top: 6px; }
+  .stars-major { display: flex; flex-wrap: wrap; gap: 6px; min-height: 30px; }
+  .star { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.15; }
+  .star .n { font-size: 14px; font-weight: 700; }
+  .star .b { font-size: 10px; color: #8a7a5c; }
+  .star .m { font-size: 10px; color: #fff; border-radius: 3px; padding: 0 3px; margin-top: 1px; }
+  .stars-minor { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+  .stars-minor .star .n { font-size: 12px; font-weight: 600; color: #5b4a2f; }
+  .stars-adj { margin-top: 2px; color: #8a7a5c; font-size: 10px; line-height: 1.5; }
+  .flow-stars { margin-top: 2px; font-size: 10px; line-height: 1.5; }
+  .flow-stars span { margin-right: 3px; font-weight: 600; }
+  .palace-foot { margin-top: auto; }
+  .gods { display: flex; justify-content: space-between; font-size: 9px; color: #a0906e; }
+  .layer-names { font-size: 10px; line-height: 1.4; min-height: 0; }
+  .layer-names b { font-weight: 600; }
+  .foot-main { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid #ece2c8; padding-top: 2px; margin-top: 2px; }
+  .foot-main .pname { font-size: 13px; font-weight: 700; color: var(--accent); }
+  .foot-main .pname .body-tag, .foot-main .pname .origin-tag { font-size: 9px; color: #fff; background: #b45309; border-radius: 3px; padding: 0 2px; margin-left: 2px; vertical-align: 2px; }
+  .foot-main .pname .origin-tag { background: #0e7490; }
+  .foot-main .gz { font-size: 12px; color: #6b5b3e; }
+  .foot-main .range { font-size: 10px; color: #8a7a5c; text-align: right; }
+  .marker { position: absolute; top: 4px; right: 5px; display: flex; gap: 2px; }
+  .marker span { font-size: 10px; color: #fff; border-radius: 3px; padding: 0 3px; }
+  @media (max-width: 860px) {
+    #grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: none; }
+    #center { grid-area: auto; order: 99; }
+    .palace { grid-area: auto !important; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>紫微斗數排盤</h1>
+  <p>本命 · 大限 · 小限 · 流年 · 流月 · 流日 · 流時</p>
+</header>
+
+<div id="form">
+  <label>曆別
+    <select id="calendar">
+      <option value="solar">國曆</option>
+      <option value="lunar">農曆</option>
+    </select>
+  </label>
+  <label>年 <input type="number" id="year" value="2000" min="1901" max="2099"></label>
+  <label>月 <input type="number" id="month" value="8" min="1" max="12"></label>
+  <label>日 <input type="number" id="day" value="16" min="1" max="31"></label>
+  <label id="leap-wrap" style="display:none">閏月 <input type="checkbox" id="isLeapMonth"></label>
+  <label>時辰
+    <select id="timeIndex"></select>
+  </label>
+  <label>性別
+    <select id="gender">
+      <option value="female">女</option>
+      <option value="male">男</option>
+    </select>
+  </label>
+  <button id="go">排　盤</button>
+</div>
+
+<div id="target-bar">
+  <label>運限日期 <input type="date" id="targetDate"></label>
+  <label>時辰 <select id="targetTimeIndex"></select></label>
+  顯示：
+  <label class="layer-toggle" style="color:var(--c運)"><input type="checkbox" id="show運" checked>大限</label>
+  <label class="layer-toggle" style="color:var(--c年)"><input type="checkbox" id="show年" checked>流年</label>
+  <label class="layer-toggle" style="color:var(--c月)"><input type="checkbox" id="show月">流月</label>
+  <label class="layer-toggle" style="color:var(--c日)"><input type="checkbox" id="show日">流日</label>
+  <label class="layer-toggle" style="color:var(--c時)"><input type="checkbox" id="show時">流時</label>
+</div>
+
+<div id="error"></div>
+
+<div id="board">
+  <div id="grid"></div>
+</div>
+
+<script>
+'use strict';
+const 時辰選項 = ['早子時 00-01', '丑時 01-03', '寅時 03-05', '卯時 05-07', '辰時 07-09', '巳時 09-11',
+  '午時 11-13', '未時 13-15', '申時 15-17', '酉時 17-19', '戌時 19-21', '亥時 21-23', '晚子時 23-00'];
+for (const id of ['timeIndex', 'targetTimeIndex']) {
+  const sel = document.getElementById(id);
+  時辰選項.forEach((t, i) => sel.add(new Option(t, i)));
+}
+document.getElementById('timeIndex').value = 2;
+document.getElementById('targetDate').valueAsDate = new Date();
+document.getElementById('calendar').addEventListener('change', (e) => {
+  document.getElementById('leap-wrap').style.display = e.target.value === 'lunar' ? '' : 'none';
+});
+
+// 宮位（寅=0）對應 4×4 格線位置
+const 格位 = [[4,1],[3,1],[2,1],[1,1],[1,2],[1,3],[1,4],[2,4],[3,4],[4,4],[4,3],[4,2]];
+const 層色 = { 運: 'var(--c運)', 年: 'var(--c年)', 月: 'var(--c月)', 日: 'var(--c日)', 時: 'var(--c時)', 小: 'var(--c小)' };
+const 化色 = { 祿: 'var(--m祿)', 權: 'var(--m權)', 科: 'var(--m科)', 忌: 'var(--m忌)' };
+let 目前資料 = null;
+let 選取宮 = -1;
+
+async function 排盤() {
+  const q = new URLSearchParams({
+    calendar: document.getElementById('calendar').value,
+    year: document.getElementById('year').value,
+    month: document.getElementById('month').value,
+    day: document.getElementById('day').value,
+    isLeapMonth: document.getElementById('isLeapMonth').checked,
+    timeIndex: document.getElementById('timeIndex').value,
+    gender: document.getElementById('gender').value,
+    targetDate: document.getElementById('targetDate').value,
+    targetTimeIndex: document.getElementById('targetTimeIndex').value,
+  });
+  document.getElementById('error').textContent = '';
+  try {
+    const res = await fetch('/api/v1/horoscope?' + q);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error);
+    目前資料 = json.data;
+    繪盤();
+  } catch (e) {
+    document.getElementById('error').textContent = '排盤失敗：' + e.message;
+  }
+}
+
+function 星HTML(s, 大) {
+  const 化 = s.四化 ? `<span class="m" style="background:${化色[s.四化]}">${s.四化}</span>` : '';
+  return `<span class="star"><span class="n">${s.名稱}</span><span class="b">${s.亮度 || ''}</span>${化}</span>`;
+}
+
+function 繪盤() {
+  const { 本命, 運限 } = 目前資料;
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  document.getElementById('board').style.display = '';
+
+  const 顯示 = {};
+  for (const 層 of ['運', '年', '月', '日', '時']) 顯示[層] = document.getElementById('show' + 層).checked;
+  const 層們 = [
+    ['運', 運限.大限, 顯示.運], ['年', 運限.流年, 顯示.年], ['月', 運限.流月, 顯示.月],
+    ['日', 運限.流日, 顯示.日], ['時', 運限.流時, 顯示.時],
+  ];
+
+  for (let i = 0; i < 12; i++) {
+    const p = 本命.宮位[i];
+    const div = document.createElement('div');
+    div.className = 'palace';
+    div.style.gridArea = `${格位[i][0]} / ${格位[i][1]}`;
+    div.dataset.idx = i;
+
+    // 運限命宮標記
+    let 標記 = '';
+    for (const [層, 資料, 開] of 層們) {
+      if (開 && 資料.宮位索引 === i) 標記 += `<span style="background:${層色[層]}">${層 === '運' ? '限' : 層}</span>`;
+    }
+    if (運限.小限.宮位索引 === i) 標記 += `<span style="background:${層色.小}">小</span>`;
+
+    // 流曜
+    let 流曜HTML = '';
+    for (const [層, 資料, 開] of 層們) {
+      if (!開 || !資料.流曜) continue;
+      const stars = 資料.流曜[i];
+      if (stars && stars.length) {
+        流曜HTML += stars.map((n) => `<span style="color:${層色[層]}">${n}</span>`).join('');
+      }
+    }
+
+    // 各層宮名
+    let 層宮名 = '';
+    for (const [層, 資料, 開] of 層們) {
+      if (開) 層宮名 += `<b style="color:${層色[層]}">${層 === '運' ? '限' : 層}:${資料.宮名[i]}</b> `;
+    }
+
+    div.innerHTML = `
+      <div class="marker">${標記}</div>
+      <div class="stars-major">${p.主星.map((s) => 星HTML(s)).join('')}</div>
+      <div class="stars-minor">${p.輔星.map((s) => 星HTML(s)).join('')}</div>
+      <div class="stars-adj">${p.雜曜.map((s) => s.名稱).join('　')}</div>
+      <div class="flow-stars">${流曜HTML}</div>
+      <div class="palace-foot">
+        <div class="gods"><span>${p.長生十二神}</span><span>${p.博士十二神}</span><span>${p.將前十二神}</span><span>${p.歲前十二神}</span></div>
+        <div class="layer-names">${層宮名}</div>
+        <div class="foot-main">
+          <span class="pname">${p.宮名}${p.是身宮 ? '<span class="body-tag">身</span>' : ''}${p.是來因宮 ? '<span class="origin-tag">來因</span>' : ''}</span>
+          <span class="gz">${p.天干}${p.地支}</span>
+          <span class="range">${p.大限.起}–${p.大限.迄}<br>小限 ${p.小限歲數.slice(0, 4).join('.')}</span>
+        </div>
+      </div>`;
+    div.addEventListener('click', () => 選宮(i));
+    grid.appendChild(div);
+  }
+
+  // 中央資訊
+  const c = document.createElement('div');
+  c.id = 'center';
+  c.innerHTML = `
+    <h2>命盤資訊</h2>
+    <div class="pillars">${本命.四柱}</div>
+    <div>${本命.性別}命　國曆 ${本命.國曆}　${本命.時辰}</div>
+    <div>農曆 ${本命.農曆}　生肖${本命.生肖}　${本命.星座}</div>
+    <div>五行局：<b>${本命.五行局}</b>　命主：<b>${本命.命主}</b>　身主：<b>${本命.身主}</b></div>
+    <div>生年四化：${['祿','權','科','忌'].map((k) => `<span style="color:${化色[k]};font-weight:700">${本命.生年四化[k]}化${k}</span>`).join('、')}</div>
+    <div class="hor">
+      <b>運限</b>　目標：${運限.目標國曆}（${運限.目標農曆}）　虛歲 ${運限.虛歲}
+      <div><span style="color:var(--c運)">■</span> ${運限.大限.名稱} ${運限.大限.起}–${運限.大限.迄} 歲（${運限.大限.天干}${運限.大限.地支}）　四化：${['祿','權','科','忌'].map((k) => 運限.大限.四化[k] + k).join(' ')}</div>
+      <div><span style="color:var(--c小)">■</span> 小限在${運限.小限.地支}宮</div>
+      <div><span style="color:var(--c年)">■</span> 流年 ${運限.流年.天干}${運限.流年.地支}　四化：${['祿','權','科','忌'].map((k) => 運限.流年.四化[k] + k).join(' ')}</div>
+      <div><span style="color:var(--c月)">■</span> 流月 ${運限.流月.天干}${運限.流月.地支}　<span style="color:var(--c日)">■</span> 流日 ${運限.流日.天干}${運限.流日.地支}　<span style="color:var(--c時)">■</span> 流時 ${運限.流時.天干}${運限.流時.地支}</div>
+    </div>
+    <div style="font-size:11px;color:#a0906e">點擊任一宮位可標示三方四正</div>`;
+  grid.appendChild(c);
+
+  if (選取宮 >= 0) 標示三方四正(選取宮);
+}
+
+function 選宮(i) {
+  選取宮 = 選取宮 === i ? -1 : i;
+  document.querySelectorAll('.palace').forEach((el) => el.classList.remove('selected', 'tri'));
+  if (選取宮 >= 0) 標示三方四正(選取宮);
+}
+
+function 標示三方四正(i) {
+  document.querySelectorAll('.palace').forEach((el) => {
+    const idx = Number(el.dataset.idx);
+    if (idx === i) el.classList.add('selected');
+    else if ([(i + 4) % 12, (i + 6) % 12, (i + 8) % 12].includes(idx)) el.classList.add('tri');
+  });
+}
+
+document.getElementById('go').addEventListener('click', 排盤);
+for (const id of ['targetDate', 'targetTimeIndex', 'show運', 'show年', 'show月', 'show日', 'show時']) {
+  document.getElementById(id).addEventListener('change', () => { if (目前資料) 排盤(); });
+}
+</script>
+</body>
+</html>

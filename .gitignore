@@ -1,0 +1,3 @@
+node_modules/
+# 開發期萃取的中間資料（可由 tools/extract.js 重新產生）
+tools/extracted.json
