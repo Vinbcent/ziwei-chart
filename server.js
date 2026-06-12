@@ -92,7 +92,12 @@ app.post('/api/v1/natal', natalHandler);
 app.get('/api/v1/horoscope', horoscopeHandler);
 app.post('/api/v1/horoscope', horoscopeHandler);
 app.get('/api/v1/health', (req, res) => res.json({ success: true, data: 'ok' }));
-app.get('/api/v1/doc', (req, res) => res.sendFile(path.join(__dirname, 'public', 'api-doc.json')));
+app.get('/api/v1/doc', (req, res) => {
+  // baseUrl 依實際請求來源動態產生（本機或雲端皆正確）
+  const doc = require('./public/api-doc.json');
+  const proto = req.headers['x-forwarded-proto'] || req.protocol;
+  res.json({ ...doc, baseUrl: `${proto}://${req.get('host')}` });
+});
 
 const PORT = process.env.PORT || 3000;
 if (require.main === module) {
