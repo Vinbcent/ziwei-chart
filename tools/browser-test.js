@@ -78,6 +78,15 @@ const 問題 = [];
     const tri = await page.$$eval('#grid .palace.tri', (e) => e.length);
     console.log(`   selected=${sel}/1 tri=${tri}/3 ${sel === 1 && tri === 3 ? '✓' : '✗'}`);
     if (!(sel === 1 && tri === 3)) 問題.push('三方四正標示異常');
+    const 線 = await page.$eval('#lines', (el) => ({ poly: el.querySelectorAll('polygon').length, line: el.querySelectorAll('line').length, dot: el.querySelectorAll('circle').length }));
+    console.log(`   指示線 三角形=${線.poly}/1 對宮線=${線.line}/1 端點=${線.dot}/4 ${線.poly === 1 && 線.line === 1 && 線.dot === 4 ? '✓' : '✗'}`);
+    if (!(線.poly === 1 && 線.line === 1 && 線.dot === 4)) 問題.push('三方四正指示線異常');
+    await page.click('#grid .palace[data-idx="4"]'); // 取消選取應清線
+    const 清 = await page.$eval('#lines', (el) => el.childNodes.length);
+    console.log(`   取消選取清線 ${清 === 0 ? '✓' : '✗'}`);
+    if (清 !== 0) 問題.push('取消選取未清除指示線');
+    await page.click('#grid .palace[data-idx="4"]'); // 重新選取供截圖
+
 
     console.log('5) 文字盤分頁');
     await page.click('.tab[data-view="text"]');

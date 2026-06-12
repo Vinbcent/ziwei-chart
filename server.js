@@ -88,6 +88,25 @@ const horoscopeHandler = 處理((p) => {
 });
 
 // 純文字命盤（樹狀格式，適合直接放入 LLM 對話）
+const 層別名 = {
+  decadal: '大限', 大限: '大限',
+  age: '小限', 小限: '小限',
+  yearly: '流年', 流年: '流年',
+  monthly: '流月', 流月: '流月',
+  daily: '流日', 流日: '流日',
+  hourly: '流時', 流時: '流時',
+};
+
+/** 解析 layers 參數：逗號分隔之維度清單；'all'/未指定＝全部 */
+function 解析層(p) {
+  const raw = p.layers;
+  if (raw === undefined || raw === '' || String(raw).toLowerCase() === 'all') return undefined;
+  const list = Array.isArray(raw) ? raw : String(raw).split(',');
+  const 層 = list.map((x) => 層別名[String(x).trim().toLowerCase()] || 層別名[String(x).trim()]).filter(Boolean);
+  if (!層.length) throw new RangeError("layers 須為 decadal/age/yearly/monthly/daily/hourly（或大限/小限/流年/流月/流日/流時）之逗號清單，或 'all'");
+  return 層;
+}
+
 function textHandler(req, res) {
   try {
     const p = req.method === 'GET' ? req.query : req.body || {};
@@ -95,7 +114,7 @@ function textHandler(req, res) {
     // 未明確給 targetDate 時仍以今日計算運限疊宮；傳 targetDate=none 可省略運限
     const 含運限 = String(p.targetDate).toLowerCase() !== 'none';
     const 運限 = 含運限 ? 排運限(本命, 解析目標(p)) : null;
-    res.type('text/plain; charset=utf-8').send(文字盤(本命, 運限));
+    res.type('text/plain; charset=utf-8').send(文字盤(本命, 運限, { 層: 解析層(p) }));
   } catch (e) {
     res.status(e instanceof RangeError ? 400 : 500).type('text/plain; charset=utf-8').send('錯誤：' + e.message);
   }

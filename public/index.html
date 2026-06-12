@@ -85,7 +85,9 @@
   #grid {
     display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(208px, auto);
     gap: 1px; background: var(--cgrid); border: 1.5px solid var(--cgrid);
+    position: relative;
   }
+  #lines { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 6; }
   .palace {
     background: #fff; padding: 5px 5px 4px; position: relative; display: flex; flex-direction: column;
     font-size: 12px; cursor: pointer; transition: box-shadow .15s, background .15s;
@@ -419,6 +421,10 @@ function 繪盤() {
     </div>`;
   grid.appendChild(c);
 
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.id = 'lines';
+  grid.appendChild(svg);
+
   if (選取 >= 0) 標示(選取);
 }
 
@@ -426,6 +432,7 @@ function 選宮(i) {
   選取 = 選取 === i ? -1 : i;
   document.querySelectorAll('.palace').forEach((el) => el.classList.remove('selected', 'tri'));
   if (選取 >= 0) 標示(選取);
+  else 清線();
 }
 function 標示(i) {
   document.querySelectorAll('.palace').forEach((el) => {
@@ -433,7 +440,48 @@ function 標示(i) {
     if (idx === i) el.classList.add('selected');
     else if ([(i + 4) % 12, (i + 6) % 12, (i + 8) % 12].includes(idx)) el.classList.add('tri');
   });
+  畫線(i);
 }
+function 清線() {
+  const svg = document.getElementById('lines');
+  if (svg) svg.innerHTML = '';
+}
+/** 三方四正指示線：三合宮連成三角形，對宮以直線相連 */
+function 畫線(i) {
+  const svg = document.getElementById('lines');
+  const grid = document.getElementById('grid');
+  if (!svg || !grid) return;
+  svg.setAttribute('width', grid.clientWidth);
+  svg.setAttribute('height', grid.clientHeight);
+  svg.innerHTML = '';
+  const ns = 'http://www.w3.org/2000/svg';
+  const 中心 = (idx) => {
+    const el = grid.querySelector(`.palace[data-idx="${idx}"]`);
+    return [el.offsetLeft + el.offsetWidth / 2, el.offsetTop + el.offsetHeight / 2];
+  };
+  const A = 中心(i), B = 中心((i + 4) % 12), C = 中心((i + 8) % 12), D = 中心((i + 6) % 12);
+  const 色 = '#dc2626';
+  // 對宮直線
+  const ln = document.createElementNS(ns, 'line');
+  ln.setAttribute('x1', A[0]); ln.setAttribute('y1', A[1]);
+  ln.setAttribute('x2', D[0]); ln.setAttribute('y2', D[1]);
+  ln.setAttribute('stroke', 色); ln.setAttribute('stroke-width', '1.5'); ln.setAttribute('opacity', '.55');
+  svg.appendChild(ln);
+  // 三合三角形
+  const tri = document.createElementNS(ns, 'polygon');
+  tri.setAttribute('points', `${A[0]},${A[1]} ${B[0]},${B[1]} ${C[0]},${C[1]}`);
+  tri.setAttribute('fill', 'rgba(220, 38, 38, .045)');
+  tri.setAttribute('stroke', 色); tri.setAttribute('stroke-width', '1.5'); tri.setAttribute('opacity', '.55');
+  svg.appendChild(tri);
+  // 端點
+  for (const [x, y] of [A, B, C, D]) {
+    const dot = document.createElementNS(ns, 'circle');
+    dot.setAttribute('cx', x); dot.setAttribute('cy', y); dot.setAttribute('r', '3.2');
+    dot.setAttribute('fill', 色); dot.setAttribute('opacity', '.75');
+    svg.appendChild(dot);
+  }
+}
+window.addEventListener('resize', () => { if (選取 >= 0 && 資料) 畫線(選取); });
 
 /* ── 分頁與文字盤 ── */
 document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => {

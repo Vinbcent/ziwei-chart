@@ -26,9 +26,10 @@
       "summary": "純文字命盤（樹狀格式）：含基本信息、十二宮星曜（亮度/生年四化/離心↓向心↑自化）、神煞、大限小限流年、限流疊宮、十二大限共 120 流年列表。適合直接貼入 LLM 對話進行解盤。",
       "parameters": {
         "（承上）": "參數與 /api/v1/horoscope 完全相同",
-        "targetDate": "預設今日；傳 'none' 可省略運限段落"
+        "targetDate": "預設今日；傳 'none' 可省略運限段落",
+        "layers": "選擇輸出的運限維度盤（逗號清單）：decadal(大限)/age(小限)/yearly(流年)/monthly(流月)/daily(流日)/hourly(流時)，或 'all'（預設）。每個維度各自輸出完整十二宮盤段（該層宮名重排、該層四化標記於星曜、該層流曜），供 LLM 同時讀取多維度盤面而毋須自行推算。建議解流月時傳 layers=decadal,yearly,monthly 一次取得多維度疊盤"
       },
-      "example": "/api/v1/text?year=1991&month=8&day=6&hour=20&gender=male"
+      "example": "/api/v1/text?year=1991&month=8&day=6&hour=20&gender=male&targetDate=2026-06-13&layers=decadal,yearly,monthly"
     },
     {
       "method": "GET 或 POST",
