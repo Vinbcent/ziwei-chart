@@ -65,9 +65,15 @@ const 問題 = [];
     console.log(`   自化標記 ${有自化} 處 ${有自化 > 0 ? '✓' : '✗'}`);
     if (!有自化) 問題.push('未渲染任何自化標記');
 
+    // 預設疊盤僅大限+流年 → 文字盤不應含流月盤段
+    const 預設文 = await page.$eval('#text-pane', (el) => el.textContent);
+    const ok預設 = 預設文.includes('大限盤［') && 預設文.includes('流年盤［') && !預設文.includes('流月盤［');
+    console.log('   文字盤預設僅大限+流年維度 ' + (ok預設 ? '✓' : '✗'));
+    if (!ok預設) 問題.push('文字盤未跟隨預設疊盤選擇');
+
     console.log('3) 切換流月/流日/流時疊盤');
     for (const k of ['月', '日', '時']) await page.click(`#layer-pills .pill[data-k="${k}"]`);
-    await new Promise((r) => setTimeout(r, 600));
+    await new Promise((r) => setTimeout(r, 1200));
     const 有時曜 = await page.$$eval('#grid .flow span', (els) => els.some((e) => /^時/.test(e.textContent)));
     console.log('   流時流曜顯示 ' + (有時曜 ? '✓' : '✗'));
     if (!有時曜) 問題.push('切換後未顯示流時流曜');
@@ -94,6 +100,10 @@ const 問題 = [];
     const ok文 = 文字.includes('紫微斗數命盤') && 文字.includes('命盤十二宮') && 文字.includes('十二大限流年');
     console.log('   文字盤內容 ' + (ok文 ? '✓' : '✗'));
     if (!ok文) 問題.push('文字盤內容異常: ' + 文字.slice(0, 60));
+    // 全部疊盤開啟後應含各維度盤段
+    const ok維度 = 文字.includes('流月盤［') && 文字.includes('流日盤［') && 文字.includes('流時盤［');
+    console.log('   文字盤含流月/流日/流時維度盤 ' + (ok維度 ? '✓' : '✗'));
+    if (!ok維度) 問題.push('開啟疊盤後文字盤未更新維度');
 
     console.log('6) 農曆模式閏月選項');
     await page.click('label[for=cal-lunar]');

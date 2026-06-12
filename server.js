@@ -97,13 +97,14 @@ const 層別名 = {
   hourly: '流時', 流時: '流時',
 };
 
-/** 解析 layers 參數：逗號分隔之維度清單；'all'/未指定＝全部 */
+/** 解析 layers 參數：逗號分隔之維度清單；'all'/未指定＝全部；'none'＝不輸出維度盤 */
 function 解析層(p) {
   const raw = p.layers;
   if (raw === undefined || raw === '' || String(raw).toLowerCase() === 'all') return undefined;
+  if (String(raw).toLowerCase() === 'none') return [];
   const list = Array.isArray(raw) ? raw : String(raw).split(',');
   const 層 = list.map((x) => 層別名[String(x).trim().toLowerCase()] || 層別名[String(x).trim()]).filter(Boolean);
-  if (!層.length) throw new RangeError("layers 須為 decadal/age/yearly/monthly/daily/hourly（或大限/小限/流年/流月/流日/流時）之逗號清單，或 'all'");
+  if (!層.length) throw new RangeError("layers 須為 decadal/age/yearly/monthly/daily/hourly（或大限/小限/流年/流月/流日/流時）之逗號清單，或 'all'/'none'");
   return 層;
 }
 

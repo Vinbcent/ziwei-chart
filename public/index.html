@@ -101,9 +101,11 @@
   .starzone { display: flex; flex-wrap: wrap; gap: 0 1px; align-content: flex-start; min-height: 104px; }
   .star { display: inline-flex; flex-direction: column; align-items: center; }
   .star .b { font-size: 9px; color: var(--csub); margin-top: 1px; }
-  .star.t1 .n { font-size: 14.5px; font-weight: 700; color: var(--cink); }
-  .star.t2 .n { font-size: 11.5px; font-weight: 600; color: var(--cmino); }
-  .star.t3 .n { font-size: 10px; color: var(--cadj); }
+  /* 星曜字體統一大小，僅以字重與顏色區分主星/輔星/雜曜 */
+  .star .n { font-size: 13px; }
+  .star.t1 .n { font-weight: 700; color: var(--cink); }
+  .star.t2 .n { font-weight: 600; color: var(--cmino); }
+  .star.t3 .n { color: var(--cadj); }
   .chip { font-size: 9px; line-height: 1.15; width: 1.3em; word-break: break-all; text-align: center; border-radius: 3px; color: #fff; font-weight: 700; margin-top: 1px; padding: 1px 0; }
   .chip.self { background: transparent !important; border-width: 1px; border-style: solid; font-weight: 500; }
 
@@ -276,9 +278,25 @@ for (const 層 of 層定義) {
   el.addEventListener('click', () => {
     const on = el.classList.toggle('on');
     el.style.background = on ? 層.css : '#fff';
-    if (資料) 繪盤();
+    if (資料) { 繪盤(); 更新文字(); }
   });
   pills.appendChild(el);
+}
+
+/** 文字盤輸出維度（跟隨疊盤顯示選擇） */
+const 層英文 = { 運: 'decadal', 年: 'yearly', 月: 'monthly', 日: 'daily', 時: 'hourly' };
+function 層參數() {
+  const on = 啟用層();
+  const keys = 層定義.filter((層) => on[層.鍵]).map((層) => 層英文[層.鍵]);
+  return keys.length ? keys.join(',') : 'none';
+}
+
+/** 依目前疊盤選擇重新取得文字盤 */
+async function 更新文字() {
+  try {
+    文字 = await fetch('/api/v1/text?' + 參數() + '&layers=' + 層參數()).then((r) => r.text());
+    document.getElementById('text-pane').textContent = 文字;
+  } catch (e) { /* 文字盤更新失敗不阻斷命盤 */ }
 }
 
 /* ── 取數 ── */
@@ -304,7 +322,7 @@ async function 排盤() {
     const q = 參數();
     const [盤回, 文回] = await Promise.all([
       fetch('/api/v1/horoscope?' + q).then((r) => r.json()),
-      fetch('/api/v1/text?' + q).then((r) => r.text()),
+      fetch('/api/v1/text?' + q + '&layers=' + 層參數()).then((r) => r.text()),
     ]);
     if (!盤回.success) throw new Error(盤回.error || '未知錯誤');
     資料 = 盤回.data;
@@ -460,24 +478,26 @@ function 畫線(i) {
     return [el.offsetLeft + el.offsetWidth / 2, el.offsetTop + el.offsetHeight / 2];
   };
   const A = 中心(i), B = 中心((i + 4) % 12), C = 中心((i + 8) % 12), D = 中心((i + 6) % 12);
-  const 色 = '#dc2626';
+  const 色 = '#9ca3af'; // 灰色虛線
   // 對宮直線
   const ln = document.createElementNS(ns, 'line');
   ln.setAttribute('x1', A[0]); ln.setAttribute('y1', A[1]);
   ln.setAttribute('x2', D[0]); ln.setAttribute('y2', D[1]);
-  ln.setAttribute('stroke', 色); ln.setAttribute('stroke-width', '1.5'); ln.setAttribute('opacity', '.55');
+  ln.setAttribute('stroke', 色); ln.setAttribute('stroke-width', '1.5');
+  ln.setAttribute('stroke-dasharray', '6 4'); ln.setAttribute('opacity', '.85');
   svg.appendChild(ln);
   // 三合三角形
   const tri = document.createElementNS(ns, 'polygon');
   tri.setAttribute('points', `${A[0]},${A[1]} ${B[0]},${B[1]} ${C[0]},${C[1]}`);
-  tri.setAttribute('fill', 'rgba(220, 38, 38, .045)');
-  tri.setAttribute('stroke', 色); tri.setAttribute('stroke-width', '1.5'); tri.setAttribute('opacity', '.55');
+  tri.setAttribute('fill', 'none');
+  tri.setAttribute('stroke', 色); tri.setAttribute('stroke-width', '1.5');
+  tri.setAttribute('stroke-dasharray', '6 4'); tri.setAttribute('opacity', '.85');
   svg.appendChild(tri);
   // 端點
   for (const [x, y] of [A, B, C, D]) {
     const dot = document.createElementNS(ns, 'circle');
-    dot.setAttribute('cx', x); dot.setAttribute('cy', y); dot.setAttribute('r', '3.2');
-    dot.setAttribute('fill', 色); dot.setAttribute('opacity', '.75');
+    dot.setAttribute('cx', x); dot.setAttribute('cy', y); dot.setAttribute('r', '3');
+    dot.setAttribute('fill', 色); dot.setAttribute('opacity', '.85');
     svg.appendChild(dot);
   }
 }
@@ -498,7 +518,7 @@ document.getElementById('copy-text').addEventListener('click', async () => {
   setTimeout(() => { b.textContent = '複製全文'; }, 1500);
 });
 document.getElementById('open-api').addEventListener('click', () => {
-  window.open('/api/v1/text?' + 參數(), '_blank');
+  window.open('/api/v1/text?' + 參數() + '&layers=' + 層參數(), '_blank');
 });
 
 document.getElementById('go').addEventListener('click', 排盤);
