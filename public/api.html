@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API 文件 · 紫微斗數排盤</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23ffffff'/%3E%3Ctext x='32' y='44' font-size='36' text-anchor='middle' fill='%238b5e1f' font-family='serif'%3E%E7%B4%AB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f5f7; --panel: #fff; --line: #e4e7eb; --ink: #26282d; --muted: #6b7280; --faint: #9aa1ab;
+    --brand: #8b5e1f; --brand-soft: #b8860b;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif; color: var(--ink); background: var(--bg); line-height: 1.75; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 28px 18px 60px; }
+  header { display: flex; align-items: baseline; gap: 14px; margin-bottom: 6px; }
+  h1 { font-family: "Noto Serif TC", serif; font-weight: 900; font-size: 26px; letter-spacing: 4px; color: var(--brand); margin: 0; }
+  header a { font-size: 13px; color: var(--muted); text-decoration: none; }
+  header a:hover { color: var(--brand); }
+  .lead { font-size: 14px; color: var(--muted); margin-bottom: 22px; }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(16,24,40,.05); }
+  h2 { font-family: "Noto Serif TC", serif; font-size: 18px; letter-spacing: 2px; color: var(--brand); margin: 0 0 4px; }
+  h3 { font-size: 14px; margin: 16px 0 6px; color: var(--ink); }
+  .method { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 5px; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; margin-right: 6px; vertical-align: 2px; }
+  code, pre { font-family: Consolas, "Courier New", monospace; }
+  code { background: #f3f4f6; border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; font-size: 12.5px; }
+  pre { background: #1f2430; color: #d7dce6; border-radius: 10px; padding: 14px 16px; font-size: 12.5px; overflow-x: auto; line-height: 1.65; }
+  pre code { background: none; border: none; padding: 0; color: inherit; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; font-size: 12px; white-space: nowrap; }
+  td:first-child { white-space: nowrap; font-family: Consolas, monospace; font-size: 12.5px; color: var(--brand); }
+  .note { font-size: 12.5px; color: var(--muted); background: #fbf7ea; border: 1px solid #e2d7b8; border-radius: 8px; padding: 10px 14px; margin-top: 10px; }
+  footer { text-align: center; font-size: 12px; color: var(--faint); margin-top: 28px; }
+  .try { font-size: 12px; margin-left: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>API 文件</h1>
+    <a href="/">← 回排盤</a>
+  </header>
+  <p class="lead">
+    紫微斗數排盤 API：輸入出生資料，取得本命盤與運限（大限／小限／流年／流月／流日／流時）之結構化 JSON 或純文字命盤。
+    所有端點同時支援 <code>GET</code>（query 參數）與 <code>POST</code>（JSON body，欄位同名）。回應皆為 UTF-8 繁體中文。
+    機器可讀版本（適合直接作為 LLM 工具描述）：<code>GET /api/v1/doc</code>。
+  </p>
+
+  <section>
+    <h2>共用參數（出生資料）</h2>
+    <table>
+      <tr><th>參數</th><th>說明</th></tr>
+      <tr><td>calendar</td><td><code>solar</code> 國曆（預設）或 <code>lunar</code> 農曆</td></tr>
+      <tr><td>year / month / day</td><td>出生年月日（整數，依 calendar 解讀；支援 1901–2099）</td></tr>
+      <tr><td>isLeapMonth</td><td>是否閏月（布林，僅農曆輸入時有意義，預設 false）</td></tr>
+      <tr><td>timeIndex</td><td>出生時辰 0–12：0=早子(00–01)、1=丑(01–03)、2=寅(03–05)、3=卯(05–07)、4=辰(07–09)、5=巳(09–11)、6=午(11–13)、7=未(13–15)、8=申(15–17)、9=酉(17–19)、10=戌(19–21)、11=亥(21–23)、12=晚子(23–00)</td></tr>
+      <tr><td>hour</td><td>亦可改傳出生鐘點 0–23（與 timeIndex 擇一）</td></tr>
+      <tr><td>gender</td><td><code>male</code>/<code>female</code> 或 <code>男</code>/<code>女</code></td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2><span class="method">GET/POST</span>/api/v1/natal — 本命盤</h2>
+    <p>回傳完整本命盤 JSON：四柱、五行局、命主身主、生年四化、十二宮（主星／輔星／雜曜、亮度、四化、離心↓／向心↑自化、四組神煞、大限區間、小限歲數、身宮與來因宮標記）。</p>
+    <pre><code>GET /api/v1/natal?year=2000&month=8&day=16&timeIndex=2&gender=female</code></pre>
+    <div class="note">宮位索引慣例：<b>寅宮 = 0</b> 順行至丑宮 = 11；亮度為廟／旺／得／利／平／不／陷；四化為祿／權／科／忌。</div>
+  </section>
+
+  <section>
+    <h2><span class="method">GET/POST</span>/api/v1/horoscope — 本命盤＋運限</h2>
+    <p>本命參數同上，另加目標日期，回傳 <code>data.本命</code> 與 <code>data.運限</code>（大限／小限／流年／流月／流日／流時，各層含宮位、干支、該層四化、流曜、宮名重排）。</p>
+    <table>
+      <tr><th>參數</th><th>說明</th></tr>
+      <tr><td>targetDate</td><td>運限目標日 <code>YYYY-MM-DD</code>（國曆，預設今日）</td></tr>
+      <tr><td>targetTimeIndex</td><td>目標時辰 0–12（流時用，預設 0）；或改用 <code>targetHour</code>（0–23）</td></tr>
+    </table>
+    <pre><code>GET /api/v1/horoscope?year=2000&month=8&day=16&timeIndex=2&gender=female
+    &targetDate=2026-06-13&targetHour=10</code></pre>
+  </section>
+
+  <section>
+    <h2><span class="method">GET/POST</span>/api/v1/text — 純文字命盤（LLM 解盤用）</h2>
+    <p>
+      以樹狀純文字輸出完整命盤，可直接貼入任何 LLM 對話。內容包含：基本信息、命盤十二宮
+      （星曜亮度、生年四化、自化）、神煞、限流疊宮、十二大限共 120 流年列表，
+      以及依 <code>layers</code> 選擇的各運限維度盤。
+    </p>
+    <table>
+      <tr><th>參數</th><th>說明</th></tr>
+      <tr><td>layers</td><td>
+        輸出哪些運限維度盤（逗號清單）：<code>decadal</code> 大限、<code>age</code> 小限、<code>yearly</code> 流年、
+        <code>monthly</code> 流月、<code>daily</code> 流日、<code>hourly</code> 流時；
+        或 <code>all</code>（預設，全部）、<code>none</code>（僅本命盤）。中文名稱亦可。<br>
+        每個維度各自輸出完整十二宮盤段：該層宮名重排、該層四化直接標記於星曜（如 <code>[月忌]</code>＝流月化忌）、該層流曜落宮。
+        <b>建議把需要的維度一次列出，讓 LLM 直接閱讀疊盤，不要讓模型自行推算流月／流日／流時。</b>
+      </td></tr>
+      <tr><td>targetDate</td><td>同上；傳 <code>none</code> 可完全省略運限段落</td></tr>
+    </table>
+    <pre><code>GET /api/v1/text?year=1991&month=8&day=6&hour=20&gender=male
+    &targetDate=2026-06-13&layers=decadal,yearly,monthly</code></pre>
+    <h3>輸出片段示意</h3>
+    <pre><code>├流月盤［癸巳，流月命宮在寅宮］
+│ ├流月四化 : 破軍化祿、巨門化權、太陰化科、貪狼化忌
+│ ├十二宮（宮名以流月重排，括號內為本命宮名）
+│ │ ├流月命宮[庚寅]（本命交友）｜星曜 : 廉貞[廟][↑忌],文曲[平][生年科]｜流月流曜 : 無
+│ │ ├流月福德[壬辰]（本命疾厄）｜星曜 : 破軍[旺][月祿]｜流月流曜 : 月喜</code></pre>
+  </section>
+
+  <section>
+    <h2>其他端點</h2>
+    <table>
+      <tr><th>端點</th><th>說明</th></tr>
+      <tr><td>GET /api/v1/doc</td><td>機器可讀之完整 API 說明（JSON），<code>baseUrl</code> 依請求來源自動產生，可直接作為 LLM function calling 的工具描述</td></tr>
+      <tr><td>GET /api/v1/health</td><td>健康檢查</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>排盤口徑</h2>
+    <table>
+      <tr><th>項目</th><th>約定</th></tr>
+      <tr><td>年界</td><td>以農曆正月初一換年（非立春）</td></tr>
+      <tr><td>晚子時</td><td>timeIndex=12（23:00–00:00）採翌日子時法：日柱與日系星曜依翌日，月、年不變</td></tr>
+      <tr><td>閏月</td><td>閏月十六（含）以後依下月安星（命宮與月系星曜），月柱與流月亦進位</td></tr>
+      <tr><td>大限</td><td>起運歲數＝五行局數；陽男陰女順行、陰男陽女逆行</td></tr>
+      <tr><td>童限</td><td>虛歲未達起運歲數時，依「一命二財三疾厄、四歲夫妻五福德」古訣取宮</td></tr>
+      <tr><td>流月</td><td>斗君法：流年支宮起正月逆數至生月，再順數至生時</td></tr>
+      <tr><td>庚干四化</td><td>太陽、武曲、太陰、天同</td></tr>
+      <tr><td>自化</td><td>離心↓＝本宮宮干使本宮星曜化出；向心↑＝對宮宮干使本宮星曜化入</td></tr>
+    </table>
+    <div class="note">錯誤回應：參數錯誤回 <code>400</code>，JSON 端點為 <code>{"success":false,"error":"…"}</code>，文字端點為純文字錯誤訊息。CORS 全開放，可由任何網域呼叫。</div>
+  </section>
+
+  <footer>ziwei-chart · 本服務僅供研究與娛樂用途</footer>
+</div>
+</body>
+</html>
