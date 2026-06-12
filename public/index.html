@@ -4,175 +4,348 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>紫微斗數排盤</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23161226'/%3E%3Ctext x='32' y='44' font-size='36' text-anchor='middle' fill='%23d4af37' font-family='serif'%3E%E7%B4%AB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f5f1e8; --panel: #fffdf7; --line: #c9b98a; --ink: #2d2418;
-    --accent: #8b5e1f;
-    --c運: #7c3aed; --c年: #dc2626; --c月: #ea580c; --c日: #16a34a; --c時: #2563eb; --c小: #0891b2;
-    --m祿: #16a34a; --m權: #dc2626; --m科: #2563eb; --m忌: #44403c;
+    --bg0: #0d0b18; --bg1: #161226; --card: rgba(26, 21, 44, .72);
+    --line: rgba(212, 175, 55, .22); --line-strong: rgba(212, 175, 55, .55);
+    --gold: #d4af37; --gold-soft: #e8cf86;
+    --ink: #ece7da; --muted: #9a8fb8; --faint: #6e6590;
+    --c運: #c084fc; --c年: #fb7185; --c月: #fbbf24; --c日: #34d399; --c時: #38bdf8; --c小: #22d3ee;
+    --m祿: #4ade80; --m權: #f87171; --m科: #60a5fa; --m忌: #9ca3af;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: "Microsoft JhengHei", "PMingLiU", serif; background: var(--bg); color: var(--ink); }
-  header { text-align: center; padding: 14px 0 4px; }
-  header h1 { margin: 0; font-size: 26px; letter-spacing: 8px; color: var(--accent); }
-  header p { margin: 4px 0 0; font-size: 12px; color: #8a7a5c; }
-  #form { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; padding: 12px; }
-  #form label { font-size: 13px; }
-  #form input, #form select, #form button { font-size: 14px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); font-family: inherit; }
-  #form input[type=number] { width: 70px; }
-  #form button { background: var(--accent); color: #fff; cursor: pointer; padding: 6px 22px; letter-spacing: 4px; }
-  #form button:hover { filter: brightness(1.1); }
-  #target-bar { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; padding: 0 12px 10px; font-size: 13px; }
-  #target-bar input, #target-bar select { font-size: 13px; padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); font-family: inherit; }
-  .layer-toggle { display: inline-flex; align-items: center; gap: 2px; margin-left: 2px; }
-  #error { text-align: center; color: #b91c1c; font-size: 14px; padding: 4px; }
-  #board { display: none; max-width: 1180px; margin: 0 auto 30px; padding: 0 10px; }
-  #grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, minmax(168px, auto)); gap: 4px; }
-  .palace { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 6px; position: relative; display: flex; flex-direction: column; font-size: 12px; cursor: pointer; transition: box-shadow .15s; }
-  .palace:hover { box-shadow: 0 0 0 2px var(--accent); }
-  .palace.selected { box-shadow: 0 0 0 2px var(--accent), inset 0 0 0 1px var(--accent); }
-  .palace.tri { background: #fdf6e3; }
-  #center { grid-area: 2 / 2 / 4 / 4; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 12px 16px; font-size: 13px; line-height: 1.85; overflow: auto; }
-  #center h2 { margin: 0 0 4px; font-size: 17px; color: var(--accent); letter-spacing: 2px; }
-  #center .pillars { font-size: 16px; letter-spacing: 3px; }
-  #center .hor { border-top: 1px dashed var(--line); margin-top: 6px; padding-top: 6px; }
-  .stars-major { display: flex; flex-wrap: wrap; gap: 6px; min-height: 30px; }
-  .star { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.15; }
-  .star .n { font-size: 14px; font-weight: 700; }
-  .star .b { font-size: 10px; color: #8a7a5c; }
-  .star .m { font-size: 10px; color: #fff; border-radius: 3px; padding: 0 3px; margin-top: 1px; }
-  .stars-minor { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
-  .stars-minor .star .n { font-size: 12px; font-weight: 600; color: #5b4a2f; }
-  .stars-adj { margin-top: 2px; color: #8a7a5c; font-size: 10px; line-height: 1.5; }
-  .flow-stars { margin-top: 2px; font-size: 10px; line-height: 1.5; }
-  .flow-stars span { margin-right: 3px; font-weight: 600; }
-  .palace-foot { margin-top: auto; }
-  .gods { display: flex; justify-content: space-between; font-size: 9px; color: #a0906e; }
-  .layer-names { font-size: 10px; line-height: 1.4; min-height: 0; }
-  .layer-names b { font-weight: 600; }
-  .foot-main { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid #ece2c8; padding-top: 2px; margin-top: 2px; }
-  .foot-main .pname { font-size: 13px; font-weight: 700; color: var(--accent); }
-  .foot-main .pname .body-tag, .foot-main .pname .origin-tag { font-size: 9px; color: #fff; background: #b45309; border-radius: 3px; padding: 0 2px; margin-left: 2px; vertical-align: 2px; }
-  .foot-main .pname .origin-tag { background: #0e7490; }
-  .foot-main .gz { font-size: 12px; color: #6b5b3e; }
-  .foot-main .range { font-size: 10px; color: #8a7a5c; text-align: right; }
-  .marker { position: absolute; top: 4px; right: 5px; display: flex; gap: 2px; }
-  .marker span { font-size: 10px; color: #fff; border-radius: 3px; padding: 0 3px; }
-  @media (max-width: 860px) {
-    #grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: none; }
-    #center { grid-area: auto; order: 99; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(1px 1px at 12% 22%, rgba(255,255,255,.5) 50%, transparent 51%),
+      radial-gradient(1px 1px at 38% 8%, rgba(255,255,255,.35) 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 65% 30%, rgba(255,255,255,.4) 50%, transparent 51%),
+      radial-gradient(1px 1px at 82% 12%, rgba(255,255,255,.45) 50%, transparent 51%),
+      radial-gradient(1px 1px at 52% 55%, rgba(255,255,255,.25) 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 90% 70%, rgba(255,255,255,.3) 50%, transparent 51%),
+      radial-gradient(1px 1px at 25% 80%, rgba(255,255,255,.3) 50%, transparent 51%),
+      radial-gradient(ellipse 80% 60% at 70% -10%, #2b1f4d 0%, transparent 60%),
+      radial-gradient(ellipse 70% 50% at 10% 110%, #271a45 0%, transparent 60%),
+      linear-gradient(160deg, var(--bg1), var(--bg0));
+    background-attachment: fixed;
+  }
+  #app { display: grid; grid-template-columns: 300px 1fr; gap: 18px; max-width: 1480px; margin: 0 auto; padding: 18px; }
+
+  /* ── 側欄 ── */
+  aside {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    padding: 22px 20px; align-self: start; position: sticky; top: 18px;
+    backdrop-filter: blur(6px);
+  }
+  .brand { text-align: center; margin-bottom: 18px; }
+  .brand h1 { font-family: "Noto Serif TC", serif; font-weight: 900; font-size: 30px; letter-spacing: 10px; margin: 0; color: var(--gold-soft); text-indent: 10px; }
+  .brand p { margin: 6px 0 0; font-size: 11px; letter-spacing: 5px; color: var(--muted); text-indent: 5px; }
+  .brand .rule { height: 1px; margin: 14px 24px 0; background: linear-gradient(90deg, transparent, var(--line-strong), transparent); }
+  fieldset { border: none; margin: 0 0 6px; padding: 0; }
+  legend { font-size: 12px; color: var(--gold); letter-spacing: 3px; padding: 0; margin-bottom: 8px; }
+  .row { display: flex; gap: 8px; margin-bottom: 9px; }
+  .row > * { flex: 1; min-width: 0; }
+  label.f { display: block; font-size: 11px; color: var(--muted); }
+  label.f > span { display: block; margin-bottom: 3px; letter-spacing: 1px; }
+  input[type=number], input[type=date], select {
+    width: 100%; padding: 7px 8px; font-size: 14px; color: var(--ink);
+    background: rgba(13, 11, 24, .6); border: 1px solid var(--line); border-radius: 8px;
+    font-family: inherit; outline: none;
+  }
+  input:focus, select:focus { border-color: var(--line-strong); }
+  input[type=date] { color-scheme: dark; }
+  select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position: calc(100% - 14px) 55%, calc(100% - 9px) 55%; background-size: 5px 5px; background-repeat: no-repeat; }
+  .seg { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .seg input { display: none; }
+  .seg label { flex: 1; text-align: center; font-size: 13px; padding: 7px 0; cursor: pointer; color: var(--muted); transition: .15s; }
+  .seg input:checked + label { background: linear-gradient(180deg, rgba(212,175,55,.28), rgba(212,175,55,.16)); color: var(--gold-soft); }
+  #leap-row { display: none; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); margin: -3px 0 9px; }
+  .divider { height: 1px; background: var(--line); margin: 14px 0; opacity: .6; }
+  #go {
+    width: 100%; padding: 12px 0; margin-top: 4px; font-size: 16px; letter-spacing: 12px; text-indent: 12px;
+    font-family: "Noto Serif TC", serif; font-weight: 700; color: #1a1430; cursor: pointer;
+    background: linear-gradient(180deg, #ecd584, var(--gold)); border: none; border-radius: 10px;
+    box-shadow: 0 4px 18px rgba(212, 175, 55, .25); transition: .15s;
+  }
+  #go:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  #go:disabled { opacity: .55; cursor: wait; transform: none; }
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill { font-size: 12px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); cursor: pointer; user-select: none; transition: .15s; }
+  .pill.on { color: #14101f; font-weight: 700; border-color: transparent; }
+  #error { margin-top: 12px; font-size: 12px; color: #fda4af; line-height: 1.5; min-height: 0; }
+
+  /* ── 主區 ── */
+  main { min-width: 0; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+  .tab {
+    font-family: "Noto Serif TC", serif; font-size: 15px; letter-spacing: 4px; padding: 9px 26px;
+    color: var(--muted); background: rgba(26, 21, 44, .5); border: 1px solid var(--line);
+    border-radius: 10px; cursor: pointer; transition: .15s;
+  }
+  .tab.on { color: var(--gold-soft); border-color: var(--line-strong); background: var(--card); }
+  #empty {
+    border: 1px dashed var(--line); border-radius: 16px; padding: 90px 20px; text-align: center;
+    color: var(--faint); font-size: 14px; letter-spacing: 3px;
+  }
+  #empty .big { font-family: "Noto Serif TC", serif; font-size: 22px; color: var(--muted); margin-bottom: 10px; letter-spacing: 6px; }
+
+  /* 命盤 4×4 */
+  #grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(186px, auto); gap: 7px; }
+  .palace {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 8px 9px 7px; position: relative; display: flex; flex-direction: column;
+    cursor: pointer; transition: border-color .15s, box-shadow .15s; backdrop-filter: blur(4px);
+  }
+  .palace:hover { border-color: var(--line-strong); }
+  .palace.selected { border-color: var(--gold); box-shadow: 0 0 22px rgba(212, 175, 55, .28), inset 0 0 14px rgba(212, 175, 55, .08); }
+  .palace.tri { border-color: rgba(212, 175, 55, .45); box-shadow: inset 0 0 18px rgba(212, 175, 55, .07); }
+  .majors { display: flex; flex-wrap: wrap; gap: 2px 10px; min-height: 44px; align-content: flex-start; }
+  .star { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.1; }
+  .star .n { font-family: "Noto Serif TC", serif; font-weight: 700; font-size: 16px; color: var(--ink); }
+  .star .b { font-size: 10px; color: var(--faint); margin-top: 1px; }
+  .chips { display: flex; gap: 2px; margin-top: 2px; }
+  .chip { font-size: 10px; line-height: 1; padding: 2px 3px; border-radius: 4px; color: #14101f; font-weight: 700; }
+  .chip.self { background: transparent !important; border-width: 1px; border-style: solid; font-weight: 500; }
+  .minors { display: flex; flex-wrap: wrap; gap: 1px 8px; margin-top: 3px; }
+  .minors .star .n { font-size: 12.5px; font-weight: 600; color: #c9bfa8; font-family: "Noto Sans TC", sans-serif; }
+  .minors .star .b { font-size: 9px; }
+  .adj { margin-top: 3px; font-size: 10.5px; color: var(--faint); line-height: 1.55; }
+  .flow { margin-top: 3px; display: flex; flex-wrap: wrap; gap: 3px; }
+  .flow span { font-size: 10px; padding: 1px 5px; border-radius: 4px; border: 1px solid; line-height: 1.4; }
+  .pfoot { margin-top: auto; padding-top: 4px; }
+  .gods { display: flex; justify-content: space-between; font-size: 9px; color: var(--faint); letter-spacing: 1px; margin-bottom: 3px; }
+  .overlay-names { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 3px; }
+  .overlay-names span { font-size: 10px; padding: 1px 5px; border-radius: 4px; color: #14101f; font-weight: 700; }
+  .pmain { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid var(--line); padding-top: 4px; }
+  .pname { font-family: "Noto Serif TC", serif; font-size: 15px; font-weight: 700; color: var(--gold-soft); letter-spacing: 2px; }
+  .ptag { font-size: 9px; vertical-align: 3px; margin-left: 3px; padding: 1px 4px; border-radius: 4px; background: rgba(212,175,55,.2); color: var(--gold-soft); border: 1px solid var(--line); letter-spacing: 0; }
+  .pgz { font-family: "Noto Serif TC", serif; font-size: 14px; color: var(--muted); }
+  .pinfo { text-align: right; font-size: 9.5px; color: var(--faint); line-height: 1.45; }
+  .marks { position: absolute; top: 6px; right: 7px; display: flex; gap: 3px; }
+  .marks span { font-size: 10px; font-weight: 700; color: #14101f; border-radius: 4px; padding: 1px 4px; }
+
+  /* 中央資訊 */
+  #center { grid-area: 2 / 2 / 4 / 4; background: linear-gradient(160deg, rgba(33,26,58,.85), rgba(20,16,36,.85)); border: 1px solid var(--line-strong); border-radius: 12px; padding: 18px 22px; overflow: auto; backdrop-filter: blur(6px); }
+  #center h2 { font-family: "Noto Serif TC", serif; margin: 0 0 2px; font-size: 19px; letter-spacing: 5px; color: var(--gold-soft); }
+  #center .pillars { font-family: "Noto Serif TC", serif; font-size: 19px; letter-spacing: 4px; color: var(--ink); margin: 6px 0 2px; }
+  #center .meta { font-size: 12.5px; color: var(--muted); line-height: 1.9; }
+  #center .meta b { color: var(--ink); font-weight: 500; }
+  .keyrow { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  .key { font-size: 11.5px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .key b { color: var(--gold-soft); font-weight: 700; margin-left: 2px; }
+  .sihua { display: flex; gap: 8px; margin: 6px 0 2px; flex-wrap: wrap; }
+  .sihua span { font-size: 12px; padding: 3px 9px; border-radius: 6px; color: #14101f; font-weight: 700; }
+  #center .hor { border-top: 1px dashed var(--line); margin-top: 10px; padding-top: 10px; font-size: 12.5px; line-height: 2; color: var(--muted); }
+  #center .hor .lay { display: inline-block; min-width: 34px; font-weight: 700; }
+  #center .tip { margin-top: 8px; font-size: 10.5px; color: var(--faint); }
+
+  /* 文字盤 */
+  #view-text { display: none; }
+  .text-bar { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
+  .text-bar button { font-size: 13px; padding: 7px 18px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; letter-spacing: 2px; }
+  .text-bar button:hover { border-color: var(--line-strong); }
+  .text-bar .hint { font-size: 11.5px; color: var(--faint); }
+  #text-pane {
+    background: rgba(13, 11, 24, .75); border: 1px solid var(--line); border-radius: 12px;
+    padding: 18px 20px; font-family: Consolas, "Noto Sans TC", monospace; font-size: 12.5px;
+    line-height: 1.75; color: #cfc7e2; white-space: pre-wrap; word-break: break-all; min-height: 300px;
+  }
+
+  @media (max-width: 1080px) {
+    #app { grid-template-columns: 1fr; }
+    aside { position: static; }
+    #grid { grid-template-columns: repeat(2, 1fr); }
     .palace { grid-area: auto !important; }
+    #center { grid-area: auto; order: 99; }
   }
 </style>
 </head>
 <body>
-<header>
-  <h1>紫微斗數排盤</h1>
-  <p>本命 · 大限 · 小限 · 流年 · 流月 · 流日 · 流時</p>
-</header>
+<div id="app">
+  <aside>
+    <div class="brand">
+      <h1>紫微斗數</h1>
+      <p>本命 × 運限 × 流曜 排盤</p>
+      <div class="rule"></div>
+    </div>
 
-<div id="form">
-  <label>曆別
-    <select id="calendar">
-      <option value="solar">國曆</option>
-      <option value="lunar">農曆</option>
-    </select>
-  </label>
-  <label>年 <input type="number" id="year" value="2000" min="1901" max="2099"></label>
-  <label>月 <input type="number" id="month" value="8" min="1" max="12"></label>
-  <label>日 <input type="number" id="day" value="16" min="1" max="31"></label>
-  <label id="leap-wrap" style="display:none">閏月 <input type="checkbox" id="isLeapMonth"></label>
-  <label>時辰
-    <select id="timeIndex"></select>
-  </label>
-  <label>性別
-    <select id="gender">
-      <option value="female">女</option>
-      <option value="male">男</option>
-    </select>
-  </label>
-  <button id="go">排　盤</button>
-</div>
+    <fieldset>
+      <legend>出生資料</legend>
+      <div class="row">
+        <div class="seg" id="seg-cal">
+          <input type="radio" name="cal" id="cal-solar" value="solar" checked><label for="cal-solar">國曆</label>
+          <input type="radio" name="cal" id="cal-lunar" value="lunar"><label for="cal-lunar">農曆</label>
+        </div>
+      </div>
+      <div class="row">
+        <label class="f"><span>年</span><input type="number" id="year" value="2000" min="1901" max="2099"></label>
+        <label class="f"><span>月</span><input type="number" id="month" value="8" min="1" max="12"></label>
+        <label class="f"><span>日</span><input type="number" id="day" value="16" min="1" max="31"></label>
+      </div>
+      <div id="leap-row"><input type="checkbox" id="isLeapMonth"><label for="isLeapMonth">此月為閏月</label></div>
+      <div class="row">
+        <label class="f"><span>時辰</span><select id="timeIndex"></select></label>
+      </div>
+      <div class="row">
+        <div class="seg">
+          <input type="radio" name="g" id="g-f" value="female" checked><label for="g-f">女</label>
+          <input type="radio" name="g" id="g-m" value="male"><label for="g-m">男</label>
+        </div>
+      </div>
+    </fieldset>
 
-<div id="target-bar">
-  <label>運限日期 <input type="date" id="targetDate"></label>
-  <label>時辰 <select id="targetTimeIndex"></select></label>
-  顯示：
-  <label class="layer-toggle" style="color:var(--c運)"><input type="checkbox" id="show運" checked>大限</label>
-  <label class="layer-toggle" style="color:var(--c年)"><input type="checkbox" id="show年" checked>流年</label>
-  <label class="layer-toggle" style="color:var(--c月)"><input type="checkbox" id="show月">流月</label>
-  <label class="layer-toggle" style="color:var(--c日)"><input type="checkbox" id="show日">流日</label>
-  <label class="layer-toggle" style="color:var(--c時)"><input type="checkbox" id="show時">流時</label>
-</div>
+    <div class="divider"></div>
 
-<div id="error"></div>
+    <fieldset>
+      <legend>運限目標</legend>
+      <div class="row">
+        <label class="f"><span>日期</span><input type="date" id="targetDate"></label>
+      </div>
+      <div class="row">
+        <label class="f"><span>時辰</span><select id="targetTimeIndex"></select></label>
+      </div>
+    </fieldset>
 
-<div id="board">
-  <div id="grid"></div>
+    <div class="divider"></div>
+
+    <fieldset>
+      <legend>疊盤顯示</legend>
+      <div class="pills" id="layer-pills"></div>
+    </fieldset>
+
+    <button id="go">排盤</button>
+    <div id="error"></div>
+  </aside>
+
+  <main>
+    <div class="tabs">
+      <button class="tab on" data-view="chart">命盤</button>
+      <button class="tab" data-view="text">文字盤（LLM 用）</button>
+    </div>
+
+    <section id="view-chart">
+      <div id="empty"><div class="big">未　排　盤</div>輸入出生資料後按「排盤」</div>
+      <div id="grid" style="display:none"></div>
+    </section>
+
+    <section id="view-text">
+      <div class="text-bar">
+        <button id="copy-text">複製全文</button>
+        <button id="open-api">開啟 API 連結</button>
+        <span class="hint">此純文字命盤可直接貼給任何 LLM 進行解盤，亦可由 <code>/api/v1/text</code> 取得</span>
+      </div>
+      <pre id="text-pane">（尚未排盤）</pre>
+    </section>
+  </main>
 </div>
 
 <script>
 'use strict';
-const 時辰選項 = ['早子時 00-01', '丑時 01-03', '寅時 03-05', '卯時 05-07', '辰時 07-09', '巳時 09-11',
-  '午時 11-13', '未時 13-15', '申時 15-17', '酉時 17-19', '戌時 19-21', '亥時 21-23', '晚子時 23-00'];
+/* ── 常數 ── */
+const 時辰選項 = ['早子 00–01', '丑 01–03', '寅 03–05', '卯 05–07', '辰 07–09', '巳 09–11',
+  '午 11–13', '未 13–15', '申 15–17', '酉 17–19', '戌 19–21', '亥 21–23', '晚子 23–00'];
+const 格位 = [[4,1],[3,1],[2,1],[1,1],[1,2],[1,3],[1,4],[2,4],[3,4],[4,4],[4,3],[4,2]]; // 宮位(寅=0)→格線
+const 層定義 = [
+  { 鍵: '運', 名: '大限', css: 'var(--c運)', 預設: true },
+  { 鍵: '年', 名: '流年', css: 'var(--c年)', 預設: true },
+  { 鍵: '月', 名: '流月', css: 'var(--c月)', 預設: false },
+  { 鍵: '日', 名: '流日', css: 'var(--c日)', 預設: false },
+  { 鍵: '時', 名: '流時', css: 'var(--c時)', 預設: false },
+];
+const 化色 = { 祿: 'var(--m祿)', 權: 'var(--m權)', 科: 'var(--m科)', 忌: 'var(--m忌)' };
+let 資料 = null, 文字 = '', 選取 = -1;
+
+/* ── 初始化控制項 ── */
 for (const id of ['timeIndex', 'targetTimeIndex']) {
   const sel = document.getElementById(id);
-  時辰選項.forEach((t, i) => sel.add(new Option(t, i)));
+  時辰選項.forEach((t, i) => sel.add(new Option(t + '時', i)));
 }
 document.getElementById('timeIndex').value = 2;
 document.getElementById('targetDate').valueAsDate = new Date();
-document.getElementById('calendar').addEventListener('change', (e) => {
-  document.getElementById('leap-wrap').style.display = e.target.value === 'lunar' ? '' : 'none';
-});
+document.querySelectorAll('input[name=cal]').forEach((r) => r.addEventListener('change', () => {
+  document.getElementById('leap-row').style.display = document.getElementById('cal-lunar').checked ? 'flex' : 'none';
+}));
+const pills = document.getElementById('layer-pills');
+for (const 層 of 層定義) {
+  const el = document.createElement('span');
+  el.className = 'pill' + (層.預設 ? ' on' : '');
+  el.textContent = 層.名;
+  el.dataset.k = 層.鍵;
+  el.style.borderColor = 層.css;
+  if (層.預設) el.style.background = 層.css;
+  el.addEventListener('click', () => {
+    const on = el.classList.toggle('on');
+    el.style.background = on ? 層.css : 'transparent';
+    if (資料) 繪盤();
+  });
+  pills.appendChild(el);
+}
 
-// 宮位（寅=0）對應 4×4 格線位置
-const 格位 = [[4,1],[3,1],[2,1],[1,1],[1,2],[1,3],[1,4],[2,4],[3,4],[4,4],[4,3],[4,2]];
-const 層色 = { 運: 'var(--c運)', 年: 'var(--c年)', 月: 'var(--c月)', 日: 'var(--c日)', 時: 'var(--c時)', 小: 'var(--c小)' };
-const 化色 = { 祿: 'var(--m祿)', 權: 'var(--m權)', 科: 'var(--m科)', 忌: 'var(--m忌)' };
-let 目前資料 = null;
-let 選取宮 = -1;
-
-async function 排盤() {
-  const q = new URLSearchParams({
-    calendar: document.getElementById('calendar').value,
+/* ── 取數 ── */
+function 參數() {
+  return new URLSearchParams({
+    calendar: document.getElementById('cal-lunar').checked ? 'lunar' : 'solar',
     year: document.getElementById('year').value,
     month: document.getElementById('month').value,
     day: document.getElementById('day').value,
     isLeapMonth: document.getElementById('isLeapMonth').checked,
     timeIndex: document.getElementById('timeIndex').value,
-    gender: document.getElementById('gender').value,
+    gender: document.getElementById('g-m').checked ? 'male' : 'female',
     targetDate: document.getElementById('targetDate').value,
     targetTimeIndex: document.getElementById('targetTimeIndex').value,
   });
+}
+
+async function 排盤() {
+  const btn = document.getElementById('go');
+  btn.disabled = true; btn.textContent = '推算中…';
   document.getElementById('error').textContent = '';
   try {
-    const res = await fetch('/api/v1/horoscope?' + q);
-    const json = await res.json();
-    if (!json.success) throw new Error(json.error);
-    目前資料 = json.data;
+    const q = 參數();
+    const [盤回, 文回] = await Promise.all([
+      fetch('/api/v1/horoscope?' + q).then((r) => r.json()),
+      fetch('/api/v1/text?' + q).then((r) => r.text()),
+    ]);
+    if (!盤回.success) throw new Error(盤回.error || '未知錯誤');
+    資料 = 盤回.data;
+    文字 = 文回;
+    document.getElementById('empty').style.display = 'none';
+    document.getElementById('grid').style.display = '';
+    document.getElementById('text-pane').textContent = 文字;
     繪盤();
   } catch (e) {
     document.getElementById('error').textContent = '排盤失敗：' + e.message;
+  } finally {
+    btn.disabled = false; btn.textContent = '排盤';
   }
 }
 
-function 星HTML(s, 大) {
-  const 化 = s.四化 ? `<span class="m" style="background:${化色[s.四化]}">${s.四化}</span>` : '';
-  return `<span class="star"><span class="n">${s.名稱}</span><span class="b">${s.亮度 || ''}</span>${化}</span>`;
+/* ── 渲染 ── */
+function 星HTML(s, 小) {
+  const chips = [];
+  if (s.四化) chips.push(`<span class="chip" style="background:${化色[s.四化]}">${s.四化}</span>`);
+  if (s.離心自化) chips.push(`<span class="chip self" style="border-color:${化色[s.離心自化]};color:${化色[s.離心自化]}">↓${s.離心自化}</span>`);
+  if (s.向心自化) chips.push(`<span class="chip self" style="border-color:${化色[s.向心自化]};color:${化色[s.向心自化]}">↑${s.向心自化}</span>`);
+  return `<span class="star"><span class="n">${s.名稱}</span><span class="b">${s.亮度 || '　'}</span>${chips.length ? `<span class="chips">${chips.join('')}</span>` : ''}</span>`;
+}
+
+function 啟用層() {
+  const on = {};
+  document.querySelectorAll('#layer-pills .pill').forEach((el) => { on[el.dataset.k] = el.classList.contains('on'); });
+  return on;
 }
 
 function 繪盤() {
-  const { 本命, 運限 } = 目前資料;
+  const { 本命, 運限 } = 資料;
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
-  document.getElementById('board').style.display = '';
-
-  const 顯示 = {};
-  for (const 層 of ['運', '年', '月', '日', '時']) 顯示[層] = document.getElementById('show' + 層).checked;
-  const 層們 = [
-    ['運', 運限.大限, 顯示.運], ['年', 運限.流年, 顯示.年], ['月', 運限.流月, 顯示.月],
-    ['日', 運限.流日, 顯示.日], ['時', 運限.流時, 顯示.時],
-  ];
+  const on = 啟用層();
+  const 層資料 = { 運: 運限.大限, 年: 運限.流年, 月: 運限.流月, 日: 運限.流日, 時: 運限.流時 };
 
   for (let i = 0; i < 12; i++) {
     const p = 本命.宮位[i];
@@ -181,78 +354,81 @@ function 繪盤() {
     div.style.gridArea = `${格位[i][0]} / ${格位[i][1]}`;
     div.dataset.idx = i;
 
-    // 運限命宮標記
-    let 標記 = '';
-    for (const [層, 資料, 開] of 層們) {
-      if (開 && 資料.宮位索引 === i) 標記 += `<span style="background:${層色[層]}">${層 === '運' ? '限' : 層}</span>`;
+    let 標 = '';
+    for (const 層 of 層定義) {
+      if (on[層.鍵] && 層資料[層.鍵].宮位索引 === i) 標 += `<span style="background:${層.css}">${層.鍵 === '運' ? '限' : 層.鍵}</span>`;
     }
-    if (運限.小限.宮位索引 === i) 標記 += `<span style="background:${層色.小}">小</span>`;
+    if (運限.小限.宮位索引 === i) 標 += `<span style="background:var(--c小)">小</span>`;
 
-    // 流曜
-    let 流曜HTML = '';
-    for (const [層, 資料, 開] of 層們) {
-      if (!開 || !資料.流曜) continue;
-      const stars = 資料.流曜[i];
-      if (stars && stars.length) {
-        流曜HTML += stars.map((n) => `<span style="color:${層色[層]}">${n}</span>`).join('');
+    let 流曜 = '';
+    for (const 層 of 層定義) {
+      if (!on[層.鍵] || !層資料[層.鍵].流曜) continue;
+      for (const 名 of 層資料[層.鍵].流曜[i] || []) {
+        流曜 += `<span style="color:${層.css};border-color:${層.css}">${名}</span>`;
       }
     }
 
-    // 各層宮名
-    let 層宮名 = '';
-    for (const [層, 資料, 開] of 層們) {
-      if (開) 層宮名 += `<b style="color:${層色[層]}">${層 === '運' ? '限' : 層}:${資料.宮名[i]}</b> `;
+    let 疊名 = '';
+    for (const 層 of 層定義) {
+      if (on[層.鍵]) 疊名 += `<span style="background:${層.css}">${層.鍵 === '運' ? '限' : 層.鍵}${層資料[層.鍵].宮名[i]}</span>`;
     }
 
     div.innerHTML = `
-      <div class="marker">${標記}</div>
-      <div class="stars-major">${p.主星.map((s) => 星HTML(s)).join('')}</div>
-      <div class="stars-minor">${p.輔星.map((s) => 星HTML(s)).join('')}</div>
-      <div class="stars-adj">${p.雜曜.map((s) => s.名稱).join('　')}</div>
-      <div class="flow-stars">${流曜HTML}</div>
-      <div class="palace-foot">
+      <div class="marks">${標}</div>
+      <div class="majors">${p.主星.map((s) => 星HTML(s)).join('')}</div>
+      <div class="minors">${p.輔星.map((s) => 星HTML(s)).join('')}</div>
+      <div class="adj">${p.雜曜.map((s) => s.名稱).join('　')}</div>
+      ${流曜 ? `<div class="flow">${流曜}</div>` : ''}
+      <div class="pfoot">
         <div class="gods"><span>${p.長生十二神}</span><span>${p.博士十二神}</span><span>${p.將前十二神}</span><span>${p.歲前十二神}</span></div>
-        <div class="layer-names">${層宮名}</div>
-        <div class="foot-main">
-          <span class="pname">${p.宮名}${p.是身宮 ? '<span class="body-tag">身</span>' : ''}${p.是來因宮 ? '<span class="origin-tag">來因</span>' : ''}</span>
-          <span class="gz">${p.天干}${p.地支}</span>
-          <span class="range">${p.大限.起}–${p.大限.迄}<br>小限 ${p.小限歲數.slice(0, 4).join('.')}</span>
+        ${疊名 ? `<div class="overlay-names">${疊名}</div>` : ''}
+        <div class="pmain">
+          <span class="pname">${p.宮名}${p.是身宮 ? '<span class="ptag">身</span>' : ''}${p.是來因宮 ? '<span class="ptag">來因</span>' : ''}</span>
+          <span class="pinfo">大限 ${p.大限.起}–${p.大限.迄}<br>小限 ${p.小限歲數.slice(0, 3).join('.')}…</span>
+          <span class="pgz">${p.天干}${p.地支}</span>
         </div>
       </div>`;
     div.addEventListener('click', () => 選宮(i));
     grid.appendChild(div);
   }
 
-  // 中央資訊
+  const 化章 = (四化) => ['祿', '權', '科', '忌'].map((k) => `<span style="background:${化色[k]}">${四化[k]} 化${k}</span>`).join('');
   const c = document.createElement('div');
   c.id = 'center';
   c.innerHTML = `
-    <h2>命盤資訊</h2>
+    <h2>命盤總覽</h2>
     <div class="pillars">${本命.四柱}</div>
-    <div>${本命.性別}命　國曆 ${本命.國曆}　${本命.時辰}</div>
-    <div>農曆 ${本命.農曆}　生肖${本命.生肖}　${本命.星座}</div>
-    <div>五行局：<b>${本命.五行局}</b>　命主：<b>${本命.命主}</b>　身主：<b>${本命.身主}</b></div>
-    <div>生年四化：${['祿','權','科','忌'].map((k) => `<span style="color:${化色[k]};font-weight:700">${本命.生年四化[k]}化${k}</span>`).join('、')}</div>
-    <div class="hor">
-      <b>運限</b>　目標：${運限.目標國曆}（${運限.目標農曆}）　虛歲 ${運限.虛歲}
-      <div><span style="color:var(--c運)">■</span> ${運限.大限.名稱} ${運限.大限.起}–${運限.大限.迄} 歲（${運限.大限.天干}${運限.大限.地支}）　四化：${['祿','權','科','忌'].map((k) => 運限.大限.四化[k] + k).join(' ')}</div>
-      <div><span style="color:var(--c小)">■</span> 小限在${運限.小限.地支}宮</div>
-      <div><span style="color:var(--c年)">■</span> 流年 ${運限.流年.天干}${運限.流年.地支}　四化：${['祿','權','科','忌'].map((k) => 運限.流年.四化[k] + k).join(' ')}</div>
-      <div><span style="color:var(--c月)">■</span> 流月 ${運限.流月.天干}${運限.流月.地支}　<span style="color:var(--c日)">■</span> 流日 ${運限.流日.天干}${運限.流日.地支}　<span style="color:var(--c時)">■</span> 流時 ${運限.流時.天干}${運限.流時.地支}</div>
+    <div class="meta">
+      <b>${本命.性別}命</b>　國曆 ${本命.國曆}　${本命.時辰}（${本命.時段}）<br>
+      農曆 ${本命.農曆}　生肖<b>${本命.生肖}</b>　${本命.星座}
     </div>
-    <div style="font-size:11px;color:#a0906e">點擊任一宮位可標示三方四正</div>`;
+    <div class="keyrow">
+      <span class="key">五行局<b>${本命.五行局}</b></span>
+      <span class="key">命主<b>${本命.命主}</b></span>
+      <span class="key">身主<b>${本命.身主}</b></span>
+      <span class="key">子年斗君<b>${本命.子年斗君}</b></span>
+    </div>
+    <div class="sihua">${化章(本命.生年四化)}</div>
+    <div class="hor">
+      <span class="lay" style="color:var(--c運)">${運限.大限.名稱}</span>${運限.大限.起}–${運限.大限.迄} 歲（${運限.大限.天干}${運限.大限.地支}）　${['祿','權','科','忌'].map((k) => 運限.大限.四化[k] + k).join('・')}<br>
+      <span class="lay" style="color:var(--c年)">流年</span>${運限.流年.天干}${運限.流年.地支}（虛歲 ${運限.虛歲}）　${['祿','權','科','忌'].map((k) => 運限.流年.四化[k] + k).join('・')}<br>
+      <span class="lay" style="color:var(--c小)">小限</span>在${運限.小限.地支}宮
+      <span class="lay" style="color:var(--c月)">流月</span>${運限.流月.天干}${運限.流月.地支}
+      <span class="lay" style="color:var(--c日)">流日</span>${運限.流日.天干}${運限.流日.地支}
+      <span class="lay" style="color:var(--c時)">流時</span>${運限.流時.天干}${運限.流時.地支}
+      <div class="tip">目標 ${運限.目標國曆}（${運限.目標農曆}）　·　點擊宮位可標示三方四正　·　主星下方箭頭為自化（↓離心 ↑向心）</div>
+    </div>`;
   grid.appendChild(c);
 
-  if (選取宮 >= 0) 標示三方四正(選取宮);
+  if (選取 >= 0) 標示(選取);
 }
 
 function 選宮(i) {
-  選取宮 = 選取宮 === i ? -1 : i;
+  選取 = 選取 === i ? -1 : i;
   document.querySelectorAll('.palace').forEach((el) => el.classList.remove('selected', 'tri'));
-  if (選取宮 >= 0) 標示三方四正(選取宮);
+  if (選取 >= 0) 標示(選取);
 }
-
-function 標示三方四正(i) {
+function 標示(i) {
   document.querySelectorAll('.palace').forEach((el) => {
     const idx = Number(el.dataset.idx);
     if (idx === i) el.classList.add('selected');
@@ -260,9 +436,27 @@ function 標示三方四正(i) {
   });
 }
 
+/* ── 分頁與文字盤 ── */
+document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach((x) => x.classList.remove('on'));
+  t.classList.add('on');
+  document.getElementById('view-chart').style.display = t.dataset.view === 'chart' ? '' : 'none';
+  document.getElementById('view-text').style.display = t.dataset.view === 'text' ? 'block' : 'none';
+}));
+document.getElementById('copy-text').addEventListener('click', async () => {
+  if (!文字) return;
+  await navigator.clipboard.writeText(文字);
+  const b = document.getElementById('copy-text');
+  b.textContent = '已複製 ✓';
+  setTimeout(() => { b.textContent = '複製全文'; }, 1500);
+});
+document.getElementById('open-api').addEventListener('click', () => {
+  window.open('/api/v1/text?' + 參數(), '_blank');
+});
+
 document.getElementById('go').addEventListener('click', 排盤);
-for (const id of ['targetDate', 'targetTimeIndex', 'show運', 'show年', 'show月', 'show日', 'show時']) {
-  document.getElementById(id).addEventListener('change', () => { if (目前資料) 排盤(); });
+for (const id of ['targetDate', 'targetTimeIndex']) {
+  document.getElementById(id).addEventListener('change', () => { if (資料) 排盤(); });
 }
 </script>
 </body>

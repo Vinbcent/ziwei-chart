@@ -22,7 +22,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { 排盤, 排運限, 清理, 曆 } = require('./src');
+const { 排盤, 排運限, 文字盤, 清理, 曆 } = require('./src');
 
 const app = express();
 app.use(cors());
@@ -87,10 +87,26 @@ const horoscopeHandler = 處理((p) => {
   return { 本命: 清理(本命), 運限 };
 });
 
+// 純文字命盤（樹狀格式，適合直接放入 LLM 對話）
+function textHandler(req, res) {
+  try {
+    const p = req.method === 'GET' ? req.query : req.body || {};
+    const 本命 = 排盤(解析參數(p));
+    // 未明確給 targetDate 時仍以今日計算運限疊宮；傳 targetDate=none 可省略運限
+    const 含運限 = String(p.targetDate).toLowerCase() !== 'none';
+    const 運限 = 含運限 ? 排運限(本命, 解析目標(p)) : null;
+    res.type('text/plain; charset=utf-8').send(文字盤(本命, 運限));
+  } catch (e) {
+    res.status(e instanceof RangeError ? 400 : 500).type('text/plain; charset=utf-8').send('錯誤：' + e.message);
+  }
+}
+
 app.get('/api/v1/natal', natalHandler);
 app.post('/api/v1/natal', natalHandler);
 app.get('/api/v1/horoscope', horoscopeHandler);
 app.post('/api/v1/horoscope', horoscopeHandler);
+app.get('/api/v1/text', textHandler);
+app.post('/api/v1/text', textHandler);
 app.get('/api/v1/health', (req, res) => res.json({ success: true, data: 'ok' }));
 app.get('/api/v1/doc', (req, res) => {
   // baseUrl 依實際請求來源動態產生（本機或雲端皆正確）

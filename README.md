@@ -43,8 +43,18 @@ GET /api/v1/natal?year=2000&month=8&day=16&timeIndex=2&gender=female
 GET /api/v1/horoscope?year=2000&month=8&day=16&timeIndex=2&gender=female&targetDate=2026-06-12&targetHour=10
 ```
 
-回傳 `data.本命`（十二宮、星曜、亮度、生年四化、神煞、大限區間、小限歲數）與
+回傳 `data.本命`（十二宮、星曜、亮度、生年四化、自化、神煞、大限區間、小限歲數）與
 `data.運限`（大限／小限／流年／流月／流日／流時各層的宮位、干支、該層四化、流曜、宮名重排）。
+
+### `GET/POST /api/v1/text` — 純文字命盤（LLM 解盤用）
+
+參數與 `/api/v1/horoscope` 相同，回傳樹狀純文字命盤：基本信息、十二宮星曜
+（含亮度、生年四化、離心↓／向心↑自化）、神煞、大限小限流年、限流疊宮，
+以及十二大限共 120 個流年的干支列表。可直接貼入任何 LLM 對話進行解盤。
+
+```
+GET /api/v1/text?year=1991&month=8&day=6&hour=20&gender=male
+```
 
 宮位索引慣例：**寅宮 = 0**，順時針至丑宮 = 11。
 

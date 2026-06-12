@@ -9,6 +9,7 @@
  */
 const { 排盤, 解析生辰 } = require('./chart');
 const { 排運限 } = require('./horoscope');
+const { 文字盤 } = require('./text');
 const 曆 = require('./calendar');
 
 /** 對外輸出時移除內部欄位 */
@@ -17,4 +18,4 @@ function 清理(本命) {
   return rest;
 }
 
-module.exports = { 排盤, 排運限, 解析生辰, 清理, 曆 };
+module.exports = { 排盤, 排運限, 文字盤, 解析生辰, 清理, 曆 };
