@@ -94,6 +94,24 @@ const 問題 = [];
     await page.click('#grid .palace[data-idx="4"]'); // 重新選取供截圖
 
 
+    console.log('4.5) 運限導航步進');
+    const 流月前 = await page.$$eval('#nav-bar .nav-item .val', (els) => els[2].textContent);
+    await page.click('#nav-bar .nav-item:nth-of-type(3) .nav-btn[data-dir="下"]');
+    await page.waitForFunction(
+      (prev) => { const els = document.querySelectorAll('#nav-bar .nav-item .val'); return els[2] && els[2].textContent !== prev; },
+      { timeout: 20000 }, 流月前
+    );
+    const 流月後 = await page.$$eval('#nav-bar .nav-item .val', (els) => els[2].textContent);
+    console.log(`   流月 ${流月前} ▶ ${流月後} ${流月前 === '癸巳' && 流月後 === '甲午' ? '✓' : '✗'}`);
+    if (!(流月前 === '癸巳' && 流月後 === '甲午')) 問題.push(`流月步進異常: ${流月前}→${流月後}`);
+    const 日期同步 = await page.$eval('#targetDate', (el) => el.value);
+    console.log(`   日期欄同步為 ${日期同步} ${日期同步 === '2026-07-11' ? '✓' : '✗'}`);
+    if (日期同步 !== '2026-07-11') 問題.push('導航未同步日期欄: ' + 日期同步);
+    // 跳回原目標日供後續測試
+    await page.evaluate(() => { document.getElementById('targetDate').value = '2026-06-12'; });
+    await page.click('#go');
+    await new Promise((r) => setTimeout(r, 2500));
+
     console.log('5) 文字盤分頁');
     await page.click('.tab[data-view="text"]');
     const 文字 = await page.$eval('#text-pane', (el) => el.textContent);

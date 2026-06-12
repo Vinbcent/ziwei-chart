@@ -3,3 +3,7 @@ node_modules/
 tools/extracted.json
 
 .vercel
+
+# Gem 調教工具與個人資料（僅本機使用，不入庫）
+tools/gem-*
+tools/paste-*

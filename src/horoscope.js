@@ -116,6 +116,64 @@ function 排運限(本命, 目標) {
     目標農曆: 曆.農曆中文(農曆.年, 農曆.月, 農曆.日, 農曆.閏),
     虛歲,
     大限, 小限, 流年, 流月, 流日, 流時,
+    導航: 計算導航(農曆, 國曆, 時辰),
+  };
+}
+
+/* ── 運限步進導航：計算各維度前後一步的目標日期（農曆語意精準） ── */
+
+const 補零 = (n) => String(n).padStart(2, '0');
+const 國曆字串 = (s) => `${s.年}-${補零(s.月)}-${補零(s.日)}`;
+
+/** 農曆月份步進（含閏月序：…四月→閏四月→五月…） */
+function 步進農曆月(年, 月, 閏, 方向) {
+  if (方向 > 0) {
+    if (!閏 && 曆.閏月(年) === 月) return { 年, 月, 閏: true };
+    if (月 === 12) return { 年: 年 + 1, 月: 1, 閏: false };
+    return { 年, 月: 月 + 1, 閏: false };
+  }
+  if (閏) return { 年, 月, 閏: false };
+  if (月 === 1) return { 年: 年 - 1, 月: 12, 閏: 曆.閏月(年 - 1) === 12 };
+  return { 年, 月: 月 - 1, 閏: 曆.閏月(年) === 月 - 1 };
+}
+
+/** 農曆日期轉國曆字串，日數超過該月天數時夾至月底 */
+function 轉國曆夾日(年, 月, 日, 閏) {
+  const 上限 = 閏 ? 曆.閏月天數(年) : 曆.月天數(年, 月);
+  const s = 曆.農曆轉國曆(年, 月, Math.min(日, 上限), 閏);
+  return 國曆字串(s);
+}
+
+function 計算導航(農曆, 國曆, 時辰) {
+  const 安全 = (fn) => { try { return fn(); } catch { return null; } };
+  const 步年 = (差) => 安全(() => {
+    const 年 = 農曆.年 + 差;
+    const 閏 = 農曆.閏 && 曆.閏月(年) === 農曆.月;
+    return { targetDate: 轉國曆夾日(年, 農曆.月, 農曆.日, 閏), targetTimeIndex: 時辰 };
+  });
+  const 步月 = (方向) => 安全(() => {
+    const m = 步進農曆月(農曆.年, 農曆.月, 農曆.閏, 方向);
+    return { targetDate: 轉國曆夾日(m.年, m.月, 農曆.日, m.閏), targetTimeIndex: 時辰 };
+  });
+  const 步日 = (差) => 安全(() => {
+    const d = new Date(Date.UTC(國曆.年, 國曆.月 - 1, 國曆.日) + 差 * 86400000);
+    return { targetDate: 國曆字串({ 年: d.getUTCFullYear(), 月: d.getUTCMonth() + 1, 日: d.getUTCDate() }), targetTimeIndex: 時辰 };
+  });
+  // 流時依時序循環：…亥(11)→晚子(12)→翌日早子(0)→丑(1)…
+  const 步時 = (方向) => 安全(() => {
+    let t = 時辰 + 方向;
+    let 跨日 = 0;
+    if (t > 12) { t = 0; 跨日 = 1; }
+    if (t < 0) { t = 12; 跨日 = -1; }
+    const d = new Date(Date.UTC(國曆.年, 國曆.月 - 1, 國曆.日) + 跨日 * 86400000);
+    return { targetDate: 國曆字串({ 年: d.getUTCFullYear(), 月: d.getUTCMonth() + 1, 日: d.getUTCDate() }), targetTimeIndex: t };
+  });
+  return {
+    大限: { 上: 步年(-10), 下: 步年(10) },
+    流年: { 上: 步年(-1), 下: 步年(1) },
+    流月: { 上: 步月(-1), 下: 步月(1) },
+    流日: { 上: 步日(-1), 下: 步日(1) },
+    流時: { 上: 步時(-1), 下: 步時(1) },
   };
 }
 

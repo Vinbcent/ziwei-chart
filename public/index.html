@@ -83,6 +83,28 @@
   }
   #empty .big { font-family: "Noto Serif TC", serif; font-size: 22px; color: var(--muted); margin-bottom: 10px; letter-spacing: 6px; }
 
+  /* ── 運限導航列 ── */
+  #nav-bar {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 8px 14px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(16,24,40,.05);
+    display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center;
+  }
+  .nav-item { display: inline-flex; align-items: center; gap: 5px; }
+  .nav-item .lab { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+  .nav-item .val { font-family: "Noto Serif TC", serif; font-size: 14px; font-weight: 700; min-width: 0; white-space: nowrap; }
+  .nav-btn {
+    width: 22px; height: 22px; line-height: 20px; padding: 0; text-align: center;
+    border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--muted);
+    cursor: pointer; font-size: 11px; transition: .12s;
+  }
+  .nav-btn:hover:not(:disabled) { border-color: var(--brand-soft); color: var(--brand); }
+  .nav-btn:disabled { opacity: .35; cursor: default; }
+  #nav-today {
+    margin-left: auto; font-size: 12px; padding: 4px 14px; border-radius: 999px;
+    border: 1px solid var(--line); background: #fff; color: var(--muted); cursor: pointer; letter-spacing: 2px;
+  }
+  #nav-today:hover { border-color: var(--brand-soft); color: var(--brand); }
+
   /* ── 命盤（文墨式：白底、細線連格、星曜直書） ── */
   #board-wrap { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; box-shadow: 0 1px 3px rgba(16, 24, 40, .05); }
   #grid {
@@ -231,6 +253,7 @@
 
     <section id="view-chart">
       <div id="empty"><div class="big">未　排　盤</div>輸入出生資料後按「排盤」</div>
+      <div id="nav-bar" style="display:none"></div>
       <div id="board-wrap" style="display:none"><div id="grid"></div></div>
     </section>
 
@@ -333,13 +356,51 @@ async function 排盤() {
     文字 = 文回;
     document.getElementById('empty').style.display = 'none';
     document.getElementById('board-wrap').style.display = '';
+    document.getElementById('nav-bar').style.display = 'flex';
     document.getElementById('text-pane').textContent = 文字;
+    繪導航();
     繪盤();
   } catch (e) {
     document.getElementById('error').textContent = '排盤失敗：' + e.message;
   } finally {
     btn.disabled = false; btn.textContent = '排盤';
   }
+}
+
+/* ── 運限導航列 ── */
+function 跳轉(target) {
+  if (!target) return;
+  document.getElementById('targetDate').value = target.targetDate;
+  document.getElementById('targetTimeIndex').value = target.targetTimeIndex;
+  排盤();
+}
+
+function 繪導航() {
+  const { 運限 } = 資料;
+  const N = 運限.導航 || {};
+  const bar = document.getElementById('nav-bar');
+  const 項目 = [
+    ['大限', `${運限.大限.天干}${運限.大限.地支}・${運限.大限.起}–${運限.大限.迄}`, N.大限, 'var(--c運)'],
+    ['流年', `${運限.流年.天干}${運限.流年.地支}・${運限.虛歲}歲`, N.流年, 'var(--c年)'],
+    ['流月', `${運限.流月.天干}${運限.流月.地支}`, N.流月, 'var(--c月)'],
+    ['流日', `${運限.流日.天干}${運限.流日.地支}`, N.流日, 'var(--c日)'],
+    ['流時', `${運限.流時.天干}${運限.流時.地支}`, N.流時, 'var(--c時)'],
+  ];
+  bar.innerHTML = 項目.map(([名, 值, nav, 色], i) => `
+    <span class="nav-item">
+      <button class="nav-btn" data-k="${i}" data-dir="上" ${nav && nav.上 ? '' : 'disabled'}>◀</button>
+      <span class="lab">${名}</span><span class="val" style="color:${色}">${值}</span>
+      <button class="nav-btn" data-k="${i}" data-dir="下" ${nav && nav.下 ? '' : 'disabled'}>▶</button>
+    </span>`).join('') + `<button id="nav-today">今天</button>`;
+  const keys = ['大限', '流年', '流月', '流日', '流時'];
+  bar.querySelectorAll('.nav-btn').forEach((btn) => {
+    btn.addEventListener('click', () => 跳轉(N[keys[btn.dataset.k]][btn.dataset.dir]));
+  });
+  document.getElementById('nav-today').addEventListener('click', () => {
+    document.getElementById('targetDate').valueAsDate = new Date();
+    document.getElementById('targetTimeIndex').value = 0;
+    排盤();
+  });
 }
 
 /* ── 渲染 ── */
