@@ -4,156 +4,144 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>紫微斗數排盤</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23161226'/%3E%3Ctext x='32' y='44' font-size='36' text-anchor='middle' fill='%23d4af37' font-family='serif'%3E%E7%B4%AB%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23fffdf7'/%3E%3Ctext x='32' y='44' font-size='36' text-anchor='middle' fill='%238b5e1f' font-family='serif'%3E%E7%B4%AB%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg0: #0d0b18; --bg1: #161226; --card: rgba(26, 21, 44, .72);
-    --line: rgba(212, 175, 55, .22); --line-strong: rgba(212, 175, 55, .55);
-    --gold: #d4af37; --gold-soft: #e8cf86;
-    --ink: #ece7da; --muted: #9a8fb8; --faint: #6e6590;
-    --c運: #c084fc; --c年: #fb7185; --c月: #fbbf24; --c日: #34d399; --c時: #38bdf8; --c小: #22d3ee;
-    --m祿: #4ade80; --m權: #f87171; --m科: #60a5fa; --m忌: #9ca3af;
+    /* 現代白介面 */
+    --bg: #f4f5f7; --panel: #ffffff; --line: #e4e7eb; --ink: #26282d; --muted: #6b7280; --faint: #9aa1ab;
+    --brand: #8b5e1f; --brand-soft: #b8860b;
+    /* 命盤（保留原紙盤風格） */
+    --paper: #fffdf7; --cline: #c9b98a; --cink: #2d2418; --csub: #8a7a5c; --cmino: #5b4a2f; --cgod: #a0906e;
+    --c運: #7c3aed; --c年: #dc2626; --c月: #ea580c; --c日: #16a34a; --c時: #2563eb; --c小: #0891b2;
+    --m祿: #16a34a; --m權: #dc2626; --m科: #2563eb; --m忌: #475569;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; min-height: 100%; }
-  body {
-    font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
-    color: var(--ink);
-    background:
-      radial-gradient(1px 1px at 12% 22%, rgba(255,255,255,.5) 50%, transparent 51%),
-      radial-gradient(1px 1px at 38% 8%, rgba(255,255,255,.35) 50%, transparent 51%),
-      radial-gradient(1.5px 1.5px at 65% 30%, rgba(255,255,255,.4) 50%, transparent 51%),
-      radial-gradient(1px 1px at 82% 12%, rgba(255,255,255,.45) 50%, transparent 51%),
-      radial-gradient(1px 1px at 52% 55%, rgba(255,255,255,.25) 50%, transparent 51%),
-      radial-gradient(1.5px 1.5px at 90% 70%, rgba(255,255,255,.3) 50%, transparent 51%),
-      radial-gradient(1px 1px at 25% 80%, rgba(255,255,255,.3) 50%, transparent 51%),
-      radial-gradient(ellipse 80% 60% at 70% -10%, #2b1f4d 0%, transparent 60%),
-      radial-gradient(ellipse 70% 50% at 10% 110%, #271a45 0%, transparent 60%),
-      linear-gradient(160deg, var(--bg1), var(--bg0));
-    background-attachment: fixed;
-  }
-  #app { display: grid; grid-template-columns: 300px 1fr; gap: 18px; max-width: 1480px; margin: 0 auto; padding: 18px; }
+  body { font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif; color: var(--ink); background: var(--bg); }
+  #app { display: grid; grid-template-columns: 296px 1fr; gap: 18px; max-width: 1480px; margin: 0 auto; padding: 18px; }
 
-  /* ── 側欄 ── */
+  /* ── 側欄（現代白卡片） ── */
   aside {
-    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
     padding: 22px 20px; align-self: start; position: sticky; top: 18px;
-    backdrop-filter: blur(6px);
+    box-shadow: 0 1px 3px rgba(16, 24, 40, .06), 0 8px 24px rgba(16, 24, 40, .04);
   }
-  .brand { text-align: center; margin-bottom: 18px; }
-  .brand h1 { font-family: "Noto Serif TC", serif; font-weight: 900; font-size: 30px; letter-spacing: 10px; margin: 0; color: var(--gold-soft); text-indent: 10px; }
-  .brand p { margin: 6px 0 0; font-size: 11px; letter-spacing: 5px; color: var(--muted); text-indent: 5px; }
-  .brand .rule { height: 1px; margin: 14px 24px 0; background: linear-gradient(90deg, transparent, var(--line-strong), transparent); }
+  .brand { text-align: center; margin-bottom: 16px; }
+  .brand h1 { font-family: "Noto Serif TC", serif; font-weight: 900; font-size: 28px; letter-spacing: 9px; margin: 0; color: var(--brand); text-indent: 9px; }
+  .brand p { margin: 5px 0 0; font-size: 11px; letter-spacing: 4px; color: var(--faint); text-indent: 4px; }
+  .brand .rule { height: 1px; margin: 14px 26px 0; background: linear-gradient(90deg, transparent, #d8c79a, transparent); }
   fieldset { border: none; margin: 0 0 6px; padding: 0; }
-  legend { font-size: 12px; color: var(--gold); letter-spacing: 3px; padding: 0; margin-bottom: 8px; }
+  legend { font-size: 12px; color: var(--brand); letter-spacing: 3px; font-weight: 700; padding: 0; margin-bottom: 8px; }
   .row { display: flex; gap: 8px; margin-bottom: 9px; }
   .row > * { flex: 1; min-width: 0; }
   label.f { display: block; font-size: 11px; color: var(--muted); }
   label.f > span { display: block; margin-bottom: 3px; letter-spacing: 1px; }
   input[type=number], input[type=date], select {
-    width: 100%; padding: 7px 8px; font-size: 14px; color: var(--ink);
-    background: rgba(13, 11, 24, .6); border: 1px solid var(--line); border-radius: 8px;
-    font-family: inherit; outline: none;
+    width: 100%; padding: 7px 9px; font-size: 14px; color: var(--ink);
+    background: #fff; border: 1px solid #d6dae0; border-radius: 8px; font-family: inherit; outline: none;
+    transition: border-color .15s, box-shadow .15s;
   }
-  input:focus, select:focus { border-color: var(--line-strong); }
-  input[type=date] { color-scheme: dark; }
+  input:focus, select:focus { border-color: var(--brand-soft); box-shadow: 0 0 0 3px rgba(184, 134, 11, .12); }
   select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position: calc(100% - 14px) 55%, calc(100% - 9px) 55%; background-size: 5px 5px; background-repeat: no-repeat; }
-  .seg { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .seg { display: flex; background: #f0f1f3; border-radius: 9px; padding: 3px; }
   .seg input { display: none; }
-  .seg label { flex: 1; text-align: center; font-size: 13px; padding: 7px 0; cursor: pointer; color: var(--muted); transition: .15s; }
-  .seg input:checked + label { background: linear-gradient(180deg, rgba(212,175,55,.28), rgba(212,175,55,.16)); color: var(--gold-soft); }
+  .seg label { flex: 1; text-align: center; font-size: 13px; padding: 6px 0; cursor: pointer; color: var(--muted); border-radius: 7px; transition: .15s; }
+  .seg input:checked + label { background: #fff; color: var(--ink); font-weight: 700; box-shadow: 0 1px 3px rgba(16, 24, 40, .12); }
   #leap-row { display: none; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); margin: -3px 0 9px; }
-  .divider { height: 1px; background: var(--line); margin: 14px 0; opacity: .6; }
+  .divider { height: 1px; background: var(--line); margin: 14px 0; }
   #go {
     width: 100%; padding: 12px 0; margin-top: 4px; font-size: 16px; letter-spacing: 12px; text-indent: 12px;
-    font-family: "Noto Serif TC", serif; font-weight: 700; color: #1a1430; cursor: pointer;
-    background: linear-gradient(180deg, #ecd584, var(--gold)); border: none; border-radius: 10px;
-    box-shadow: 0 4px 18px rgba(212, 175, 55, .25); transition: .15s;
+    font-family: "Noto Serif TC", serif; font-weight: 700; color: #fff; cursor: pointer;
+    background: linear-gradient(180deg, #c0902c, var(--brand)); border: none; border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(139, 94, 31, .3); transition: .15s;
   }
-  #go:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  #go:hover { filter: brightness(1.07); transform: translateY(-1px); }
   #go:disabled { opacity: .55; cursor: wait; transform: none; }
   .pills { display: flex; flex-wrap: wrap; gap: 6px; }
-  .pill { font-size: 12px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); cursor: pointer; user-select: none; transition: .15s; }
-  .pill.on { color: #14101f; font-weight: 700; border-color: transparent; }
-  #error { margin-top: 12px; font-size: 12px; color: #fda4af; line-height: 1.5; min-height: 0; }
+  .pill { font-size: 12px; padding: 4px 12px; border-radius: 999px; border: 1px solid; color: var(--muted); cursor: pointer; user-select: none; transition: .15s; background: #fff; }
+  .pill.on { color: #fff; font-weight: 700; border-color: transparent; }
+  #error { margin-top: 12px; font-size: 12px; color: #b91c1c; line-height: 1.5; }
 
   /* ── 主區 ── */
   main { min-width: 0; }
   .tabs { display: flex; gap: 8px; margin-bottom: 12px; }
   .tab {
     font-family: "Noto Serif TC", serif; font-size: 15px; letter-spacing: 4px; padding: 9px 26px;
-    color: var(--muted); background: rgba(26, 21, 44, .5); border: 1px solid var(--line);
-    border-radius: 10px; cursor: pointer; transition: .15s;
+    color: var(--muted); background: var(--panel); border: 1px solid var(--line);
+    border-radius: 10px; cursor: pointer; transition: .15s; box-shadow: 0 1px 2px rgba(16, 24, 40, .04);
   }
-  .tab.on { color: var(--gold-soft); border-color: var(--line-strong); background: var(--card); }
+  .tab:hover { color: var(--ink); }
+  .tab.on { color: var(--brand); border-color: #d8c79a; font-weight: 700; }
   #empty {
-    border: 1px dashed var(--line); border-radius: 16px; padding: 90px 20px; text-align: center;
-    color: var(--faint); font-size: 14px; letter-spacing: 3px;
+    background: var(--panel); border: 1px dashed #d6dae0; border-radius: 16px; padding: 90px 20px;
+    text-align: center; color: var(--faint); font-size: 14px; letter-spacing: 3px;
   }
   #empty .big { font-family: "Noto Serif TC", serif; font-size: 22px; color: var(--muted); margin-bottom: 10px; letter-spacing: 6px; }
 
-  /* 命盤 4×4 */
-  #grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(186px, auto); gap: 7px; }
+  /* ── 命盤（原紙盤風格） ── */
+  #grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(178px, auto); gap: 5px; }
   .palace {
-    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
-    padding: 8px 9px 7px; position: relative; display: flex; flex-direction: column;
-    cursor: pointer; transition: border-color .15s, box-shadow .15s; backdrop-filter: blur(4px);
+    background: var(--paper); border: 1px solid var(--cline); border-radius: 6px;
+    padding: 6px 7px; position: relative; display: flex; flex-direction: column;
+    font-size: 12px; cursor: pointer; transition: box-shadow .15s;
   }
-  .palace:hover { border-color: var(--line-strong); }
-  .palace.selected { border-color: var(--gold); box-shadow: 0 0 22px rgba(212, 175, 55, .28), inset 0 0 14px rgba(212, 175, 55, .08); }
-  .palace.tri { border-color: rgba(212, 175, 55, .45); box-shadow: inset 0 0 18px rgba(212, 175, 55, .07); }
-  .majors { display: flex; flex-wrap: wrap; gap: 2px 10px; min-height: 44px; align-content: flex-start; }
-  .star { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.1; }
-  .star .n { font-family: "Noto Serif TC", serif; font-weight: 700; font-size: 16px; color: var(--ink); }
-  .star .b { font-size: 10px; color: var(--faint); margin-top: 1px; }
-  .chips { display: flex; gap: 2px; margin-top: 2px; }
-  .chip { font-size: 10px; line-height: 1; padding: 2px 3px; border-radius: 4px; color: #14101f; font-weight: 700; }
+  .palace:hover { box-shadow: 0 0 0 2px var(--brand); }
+  .palace.selected { box-shadow: 0 0 0 2px var(--brand), inset 0 0 0 1px var(--brand); }
+  .palace.tri { background: #fdf6e3; }
+  .majors { display: flex; flex-wrap: wrap; gap: 2px 8px; min-height: 42px; align-content: flex-start; }
+  .star { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.15; }
+  .star .n { font-size: 14px; font-weight: 700; color: var(--cink); }
+  .star .b { font-size: 10px; color: var(--csub); }
+  .chips { display: flex; gap: 2px; margin-top: 1px; }
+  .chip { font-size: 10px; line-height: 1; padding: 2px 3px; border-radius: 3px; color: #fff; font-weight: 700; }
   .chip.self { background: transparent !important; border-width: 1px; border-style: solid; font-weight: 500; }
-  .minors { display: flex; flex-wrap: wrap; gap: 1px 8px; margin-top: 3px; }
-  .minors .star .n { font-size: 12.5px; font-weight: 600; color: #c9bfa8; font-family: "Noto Sans TC", sans-serif; }
+  .minors { display: flex; flex-wrap: wrap; gap: 1px 7px; margin-top: 2px; }
+  .minors .star .n { font-size: 12px; font-weight: 600; color: var(--cmino); }
   .minors .star .b { font-size: 9px; }
-  .adj { margin-top: 3px; font-size: 10.5px; color: var(--faint); line-height: 1.55; }
-  .flow { margin-top: 3px; display: flex; flex-wrap: wrap; gap: 3px; }
-  .flow span { font-size: 10px; padding: 1px 5px; border-radius: 4px; border: 1px solid; line-height: 1.4; }
-  .pfoot { margin-top: auto; padding-top: 4px; }
-  .gods { display: flex; justify-content: space-between; font-size: 9px; color: var(--faint); letter-spacing: 1px; margin-bottom: 3px; }
-  .overlay-names { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 3px; }
-  .overlay-names span { font-size: 10px; padding: 1px 5px; border-radius: 4px; color: #14101f; font-weight: 700; }
-  .pmain { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid var(--line); padding-top: 4px; }
-  .pname { font-family: "Noto Serif TC", serif; font-size: 15px; font-weight: 700; color: var(--gold-soft); letter-spacing: 2px; }
-  .ptag { font-size: 9px; vertical-align: 3px; margin-left: 3px; padding: 1px 4px; border-radius: 4px; background: rgba(212,175,55,.2); color: var(--gold-soft); border: 1px solid var(--line); letter-spacing: 0; }
-  .pgz { font-family: "Noto Serif TC", serif; font-size: 14px; color: var(--muted); }
-  .pinfo { text-align: right; font-size: 9.5px; color: var(--faint); line-height: 1.45; }
-  .marks { position: absolute; top: 6px; right: 7px; display: flex; gap: 3px; }
-  .marks span { font-size: 10px; font-weight: 700; color: #14101f; border-radius: 4px; padding: 1px 4px; }
+  .adj { margin-top: 2px; font-size: 10px; color: var(--csub); line-height: 1.5; }
+  .flow { margin-top: 2px; display: flex; flex-wrap: wrap; gap: 2px 4px; }
+  .flow span { font-size: 10px; font-weight: 600; line-height: 1.4; }
+  .pfoot { margin-top: auto; padding-top: 3px; }
+  .gods { display: flex; justify-content: space-between; font-size: 9px; color: var(--cgod); margin-bottom: 2px; }
+  .overlay-names { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 2px; }
+  .overlay-names span { font-size: 10px; padding: 0 4px; border-radius: 3px; color: #fff; font-weight: 700; }
+  .pmain { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid #ece2c8; padding-top: 3px; }
+  .pname { font-family: "Noto Serif TC", serif; font-size: 14px; font-weight: 700; color: var(--brand); letter-spacing: 1px; }
+  .ptag { font-size: 9px; vertical-align: 2px; margin-left: 2px; padding: 0 3px; border-radius: 3px; background: #b45309; color: #fff; letter-spacing: 0; font-family: "Noto Sans TC", sans-serif; font-weight: 400; }
+  .ptag.origin { background: #0e7490; }
+  .pgz { font-family: "Noto Serif TC", serif; font-size: 13px; color: #6b5b3e; }
+  .pinfo { text-align: right; font-size: 9.5px; color: var(--csub); line-height: 1.4; }
+  .marks { position: absolute; top: 5px; right: 6px; display: flex; gap: 2px; }
+  .marks span { font-size: 10px; font-weight: 700; color: #fff; border-radius: 3px; padding: 1px 3px; }
 
-  /* 中央資訊 */
-  #center { grid-area: 2 / 2 / 4 / 4; background: linear-gradient(160deg, rgba(33,26,58,.85), rgba(20,16,36,.85)); border: 1px solid var(--line-strong); border-radius: 12px; padding: 18px 22px; overflow: auto; backdrop-filter: blur(6px); }
-  #center h2 { font-family: "Noto Serif TC", serif; margin: 0 0 2px; font-size: 19px; letter-spacing: 5px; color: var(--gold-soft); }
-  #center .pillars { font-family: "Noto Serif TC", serif; font-size: 19px; letter-spacing: 4px; color: var(--ink); margin: 6px 0 2px; }
-  #center .meta { font-size: 12.5px; color: var(--muted); line-height: 1.9; }
-  #center .meta b { color: var(--ink); font-weight: 500; }
+  /* 中央資訊（紙盤風格） */
+  #center { grid-area: 2 / 2 / 4 / 4; background: var(--paper); border: 1px solid var(--cline); border-radius: 6px; padding: 16px 20px; overflow: auto; }
+  #center h2 { font-family: "Noto Serif TC", serif; margin: 0 0 2px; font-size: 18px; letter-spacing: 5px; color: var(--brand); }
+  #center .pillars { font-family: "Noto Serif TC", serif; font-size: 18px; letter-spacing: 4px; color: var(--cink); margin: 6px 0 2px; }
+  #center .meta { font-size: 12.5px; color: var(--csub); line-height: 1.9; }
+  #center .meta b { color: var(--cink); font-weight: 700; }
   .keyrow { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
-  .key { font-size: 11.5px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
-  .key b { color: var(--gold-soft); font-weight: 700; margin-left: 2px; }
+  .key { font-size: 11.5px; padding: 3px 10px; border-radius: 999px; border: 1px solid #e2d7b8; background: #fbf7ea; color: var(--csub); }
+  .key b { color: var(--brand); font-weight: 700; margin-left: 2px; }
   .sihua { display: flex; gap: 8px; margin: 6px 0 2px; flex-wrap: wrap; }
-  .sihua span { font-size: 12px; padding: 3px 9px; border-radius: 6px; color: #14101f; font-weight: 700; }
-  #center .hor { border-top: 1px dashed var(--line); margin-top: 10px; padding-top: 10px; font-size: 12.5px; line-height: 2; color: var(--muted); }
+  .sihua span { font-size: 12px; padding: 3px 9px; border-radius: 5px; color: #fff; font-weight: 700; }
+  #center .hor { border-top: 1px dashed var(--cline); margin-top: 10px; padding-top: 10px; font-size: 12.5px; line-height: 2; color: var(--csub); }
   #center .hor .lay { display: inline-block; min-width: 34px; font-weight: 700; }
-  #center .tip { margin-top: 8px; font-size: 10.5px; color: var(--faint); }
+  #center .tip { margin-top: 8px; font-size: 10.5px; color: var(--cgod); }
 
-  /* 文字盤 */
+  /* ── 文字盤 ── */
   #view-text { display: none; }
-  .text-bar { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
-  .text-bar button { font-size: 13px; padding: 7px 18px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; letter-spacing: 2px; }
-  .text-bar button:hover { border-color: var(--line-strong); }
+  .text-bar { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; flex-wrap: wrap; }
+  .text-bar button { font-size: 13px; padding: 7px 18px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; letter-spacing: 2px; transition: .15s; }
+  .text-bar button:hover { border-color: var(--brand-soft); color: var(--brand); }
   .text-bar .hint { font-size: 11.5px; color: var(--faint); }
   #text-pane {
-    background: rgba(13, 11, 24, .75); border: 1px solid var(--line); border-radius: 12px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
     padding: 18px 20px; font-family: Consolas, "Noto Sans TC", monospace; font-size: 12.5px;
-    line-height: 1.75; color: #cfc7e2; white-space: pre-wrap; word-break: break-all; min-height: 300px;
+    line-height: 1.75; color: #374151; white-space: pre-wrap; word-break: break-all; min-height: 300px;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, .05);
   }
 
   @media (max-width: 1080px) {
@@ -280,7 +268,7 @@ for (const 層 of 層定義) {
   if (層.預設) el.style.background = 層.css;
   el.addEventListener('click', () => {
     const on = el.classList.toggle('on');
-    el.style.background = on ? 層.css : 'transparent';
+    el.style.background = on ? 層.css : '#fff';
     if (資料) 繪盤();
   });
   pills.appendChild(el);
@@ -326,7 +314,7 @@ async function 排盤() {
 }
 
 /* ── 渲染 ── */
-function 星HTML(s, 小) {
+function 星HTML(s) {
   const chips = [];
   if (s.四化) chips.push(`<span class="chip" style="background:${化色[s.四化]}">${s.四化}</span>`);
   if (s.離心自化) chips.push(`<span class="chip self" style="border-color:${化色[s.離心自化]};color:${化色[s.離心自化]}">↓${s.離心自化}</span>`);
@@ -364,7 +352,7 @@ function 繪盤() {
     for (const 層 of 層定義) {
       if (!on[層.鍵] || !層資料[層.鍵].流曜) continue;
       for (const 名 of 層資料[層.鍵].流曜[i] || []) {
-        流曜 += `<span style="color:${層.css};border-color:${層.css}">${名}</span>`;
+        流曜 += `<span style="color:${層.css}">${名}</span>`;
       }
     }
 
@@ -383,7 +371,7 @@ function 繪盤() {
         <div class="gods"><span>${p.長生十二神}</span><span>${p.博士十二神}</span><span>${p.將前十二神}</span><span>${p.歲前十二神}</span></div>
         ${疊名 ? `<div class="overlay-names">${疊名}</div>` : ''}
         <div class="pmain">
-          <span class="pname">${p.宮名}${p.是身宮 ? '<span class="ptag">身</span>' : ''}${p.是來因宮 ? '<span class="ptag">來因</span>' : ''}</span>
+          <span class="pname">${p.宮名}${p.是身宮 ? '<span class="ptag">身</span>' : ''}${p.是來因宮 ? '<span class="ptag origin">來因</span>' : ''}</span>
           <span class="pinfo">大限 ${p.大限.起}–${p.大限.迄}<br>小限 ${p.小限歲數.slice(0, 3).join('.')}…</span>
           <span class="pgz">${p.天干}${p.地支}</span>
         </div>
@@ -416,7 +404,7 @@ function 繪盤() {
       <span class="lay" style="color:var(--c月)">流月</span>${運限.流月.天干}${運限.流月.地支}
       <span class="lay" style="color:var(--c日)">流日</span>${運限.流日.天干}${運限.流日.地支}
       <span class="lay" style="color:var(--c時)">流時</span>${運限.流時.天干}${運限.流時.地支}
-      <div class="tip">目標 ${運限.目標國曆}（${運限.目標農曆}）　·　點擊宮位可標示三方四正　·　主星下方箭頭為自化（↓離心 ↑向心）</div>
+      <div class="tip">目標 ${運限.目標國曆}（${運限.目標農曆}）　·　點擊宮位可標示三方四正　·　星曜下方箭頭為自化（↓離心 ↑向心）</div>
     </div>`;
   grid.appendChild(c);
 
