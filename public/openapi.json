@@ -1,0 +1,120 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "紫微斗數排盤 API",
+    "description": "輸入出生資料，回傳純文字紫微斗數命盤（本命＋可選之大限／小限／流年／流月／流日／流時運限維度盤）。供 LLM 解盤使用，可多次呼叫不同 targetDate／targetHour／layers 以進行跨時間維度的分析。",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "https://ziwei-chart-blue.vercel.app" }
+  ],
+  "paths": {
+    "/api/v1/text": {
+      "get": {
+        "operationId": "getZiweiChart",
+        "summary": "取得紫微斗數命盤（純文字）",
+        "description": "回傳指定出生資料之命盤。需要分析特定時間（流年／流月／流日／流時）時，帶入 targetDate（與 targetHour、layers）；要做跨時間比較時，請以不同的 targetDate／targetHour 多次呼叫本動作。",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "required": true,
+            "description": "出生年（西元，1901–2099）",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "month",
+            "in": "query",
+            "required": true,
+            "description": "出生月（1–12，依 calendar 解讀）",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "day",
+            "in": "query",
+            "required": true,
+            "description": "出生日（依 calendar 解讀）",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "gender",
+            "in": "query",
+            "required": true,
+            "description": "性別：male 或 female（亦接受 男／女）",
+            "schema": { "type": "string", "enum": ["male", "female"] }
+          },
+          {
+            "name": "hour",
+            "in": "query",
+            "required": false,
+            "description": "出生鐘點 0–23（24 小時制）。與 timeIndex 擇一提供；兩者皆缺則須以 timeIndex 提供。",
+            "schema": { "type": "integer", "minimum": 0, "maximum": 23 }
+          },
+          {
+            "name": "timeIndex",
+            "in": "query",
+            "required": false,
+            "description": "出生時辰索引 0–12：0=早子(00-01)、1=丑(01-03)、2=寅(03-05)、3=卯(05-07)、4=辰(07-09)、5=巳(09-11)、6=午(11-13)、7=未(13-15)、8=申(15-17)、9=酉(17-19)、10=戌(19-21)、11=亥(21-23)、12=晚子(23-00)。與 hour 擇一。",
+            "schema": { "type": "integer", "minimum": 0, "maximum": 12 }
+          },
+          {
+            "name": "calendar",
+            "in": "query",
+            "required": false,
+            "description": "曆別：solar 國曆（預設）或 lunar 農曆",
+            "schema": { "type": "string", "enum": ["solar", "lunar"], "default": "solar" }
+          },
+          {
+            "name": "isLeapMonth",
+            "in": "query",
+            "required": false,
+            "description": "出生月是否為閏月（僅 calendar=lunar 時有意義）",
+            "schema": { "type": "boolean", "default": false }
+          },
+          {
+            "name": "targetDate",
+            "in": "query",
+            "required": false,
+            "description": "運限目標日期，格式 YYYY-MM-DD（國曆）。提供後會依 layers 附上對應運限維度盤。傳 none 表示僅要本命盤。預設為今日。",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "targetHour",
+            "in": "query",
+            "required": false,
+            "description": "運限目標鐘點 0–23（分析流時必填）。與 targetTimeIndex 擇一。",
+            "schema": { "type": "integer", "minimum": 0, "maximum": 23 }
+          },
+          {
+            "name": "targetTimeIndex",
+            "in": "query",
+            "required": false,
+            "description": "運限目標時辰索引 0–12（同 timeIndex 對照）。與 targetHour 擇一。",
+            "schema": { "type": "integer", "minimum": 0, "maximum": 12 }
+          },
+          {
+            "name": "layers",
+            "in": "query",
+            "required": false,
+            "description": "要附帶的運限維度盤，逗號分隔：decadal(大限)、age(小限)、yearly(流年)、monthly(流月)、daily(流日)、hourly(流時)；all=全部（預設）、none=僅本命盤。例：decadal,yearly,monthly。每個維度盤含該層宮名重排、該層四化標記於星曜、該層流曜。",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "純文字命盤",
+            "content": {
+              "text/plain": { "schema": { "type": "string" } }
+            }
+          },
+          "400": {
+            "description": "參數錯誤",
+            "content": {
+              "text/plain": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    }
+  }
+}
