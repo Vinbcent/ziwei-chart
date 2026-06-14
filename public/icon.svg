@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3c2b68"/>
+      <stop offset="0.55" stop-color="#241a45"/>
+      <stop offset="1" stop-color="#140f29"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.4" r="0.62">
+      <stop offset="0" stop-color="#e7c977" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#e7c977" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6dd92"/>
+      <stop offset="0.5" stop-color="#dcb24e"/>
+      <stop offset="1" stop-color="#c0902c"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="114" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="114" fill="url(#glow)"/>
+  <rect x="28" y="28" width="456" height="456" rx="92" fill="none" stroke="url(#gold)" stroke-opacity="0.5" stroke-width="5"/>
+  <!-- 北斗微點 -->
+  <g fill="#f6dd92" opacity="0.85">
+    <circle cx="372" cy="120" r="6"/>
+    <circle cx="408" cy="146" r="4.5"/>
+    <circle cx="398" cy="186" r="3.5"/>
+  </g>
+  <text x="256" y="268" font-family="'Noto Serif TC','PMingLiU',serif" font-weight="900" font-size="300" fill="url(#gold)" text-anchor="middle" dominant-baseline="central">紫</text>
+</svg>
